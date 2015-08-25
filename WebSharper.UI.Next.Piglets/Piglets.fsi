@@ -14,6 +14,14 @@ type Result<'T> =
 [<Sealed>]
 type Result =
 
+    static member IsSuccess
+         : Result<'T>
+        -> bool
+
+    static member IsFailure
+         : Result<'T>
+        -> bool
+
     static member Map
          : f: ('T -> 'U)
         -> r: Result<'T>

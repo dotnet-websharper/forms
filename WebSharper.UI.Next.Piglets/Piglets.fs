@@ -32,6 +32,16 @@ type Result<'T> =
 [<JavaScript; Sealed>]
 type Result =
 
+    static member IsSuccess (r: Result<'T>) =
+        match r with
+        | Success _ -> true
+        | Failure _ -> false
+
+    static member IsFailure (r: Result<'T>) =
+        match r with
+        | Success _ -> false
+        | Failure _ -> true
+
     static member Map (f: 'T -> 'U) (r: Result<'T>) =
         match r with
         | Success x -> Success (f x)
@@ -492,7 +502,7 @@ module Doc =
         let attrs =
             attrs |> Seq.append [
                 attr.disabledDynPred (View.Const "disabled")
-                    (submitter.Input |> View.Map (function Failure _ -> true | Success _ -> false))
+                    (submitter.Input |> View.Map Result.IsFailure)
             ]
         Doc.Button caption attrs submitter.Trigger
 
