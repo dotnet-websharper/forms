@@ -8,7 +8,7 @@ open WebSharper.UI.Next.Client
 open WebSharper.UI.Next.Notation
 
 [<JavaScript; Sealed>]
-type ErrorMessage(id: int, message: string) =
+type ErrorMessage (id: int, message: string) =
 
     [<Inline>]
     member this.Id = id
@@ -93,10 +93,24 @@ type Result =
 [<JavaScript>]
 type Piglet<'T, 'R> =
     {
-        Id : int
-        View : View<Result<'T>>
-        Render : 'R
+        id : int
+        view : View<Result<'T>>
+        render : 'R
     }
+
+    member this.Id = this.id
+    member this.View = this.view
+    member this.Render = this.render
+
+type ErrorMessage with
+
+    [<JavaScript>]
+    static member Create (id: int, text) =
+        new ErrorMessage(id, text)
+
+    [<JavaScript>]
+    static member Create (p: Piglet<_, _>, text) =
+        new ErrorMessage(p.id, text)
 
 [<JavaScript; AutoOpen>]
 module Utils =
@@ -125,25 +139,25 @@ module Piglet =
         let choice = memoize choice
 
         let pOut =
-            chooser.View
+            chooser.view
             |> View.Map (function
                 | Success i -> Success (choice i)
                 | Failure m -> Failure m)
 
         let out =
             pOut |> View.Bind (function
-                | Success p -> p.View
+                | Success p -> p.view
                 | Failure m -> View.Const (Failure m))
         
         member this.View : View<Result<'TResult>> = out
 
         member this.RenderPrimary (f: 'U) : Doc =
-            chooser.Render f :> Doc
+            chooser.render f :> Doc
 
         member this.RenderDependent (f: 'W) : Doc =
             pOut
             |> View.Map (function
-                | Success p -> p.Render f :> Doc
+                | Success p -> p.render f :> Doc
                 | Failure _ -> Doc.Empty)
             |> Doc.EmbedView
 
@@ -222,8 +236,8 @@ module Piglet =
                         | _ -> ()
                     )
                 let p = p x
-                let v = View.Map2 (fun x () -> x) p.View (View.Map2 (fun () () -> ()) vMoveUp vMoveDown)
-                let p = { p with View = v }
+                let v = View.Map2 (fun x () -> x) p.view (View.Map2 (fun () () -> ()) vMoveUp vMoveDown)
+                let p = { p with view = v }
                 p, ItemOperations(delete, sMoveUp, sMoveDown), ident
             do Seq.iter (mk >> arr.Add) inits
 
@@ -232,7 +246,7 @@ module Piglet =
                 |> View.Bind (fun arr ->
                     arr.ToArray()
                     |> Array.MapReduce
-                        (fun (p, _, _ as x) -> p.View |> View.Map (fun _ -> Seq.singleton x))
+                        (fun (p, _, _ as x) -> p.view |> View.Map (fun _ -> Seq.singleton x))
                         (View.Const Seq.empty)
                         (View.Map2 Seq.append)
                 )
@@ -252,7 +266,7 @@ module Piglet =
                 |> View.Bind (fun s ->
                     s.ToArray()
                     |> Array.MapReduce
-                        (fun (p, _, _) -> p.View |> View.Map (Result.Map Seq.singleton))
+                        (fun (p, _, _) -> p.view |> View.Map (Result.Map Seq.singleton))
                         (View.Const (Success Seq.empty))
                         (View.Map2 (Result.Append Seq.append))
                 )
@@ -262,15 +276,15 @@ module Piglet =
             member this.Render (f: ItemOperations -> 'V) : Doc =
                 changesView
                 |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
-                    p.Render (f ops) :> Doc
+                    p.render (f ops) :> Doc
                 )
 
             member this.Add (x: 'T) =
                 add x
 
             member this.RenderAdder f =
-                adder.Render f
-                |> Doc.Append (adder.View |> View.Map adderView |> Doc.EmbedView)
+                adder.render f
+                |> Doc.Append (adder.view |> View.Map adderView |> Doc.EmbedView)
 
         [<Class>]
         type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> (p, inits, pInit, ``default``) =
@@ -282,96 +296,96 @@ module Piglet =
 
     let Create view (renderBuilder: _ -> _) =
         {
-            Id = Fresh.Id()
-            View = view
-            Render = renderBuilder
+            id = Fresh.Id()
+            view = view
+            render = renderBuilder
         }
 
     let Render renderFunction p =
-        p.Render renderFunction
+        p.render renderFunction
         |> Doc.Append (
-            p.View
+            p.view
             |> View.Map (fun _ -> Doc.Empty)
             |> Doc.EmbedView
         )
 
     let GetView (p: Piglet<_, _ -> _>) =
-        p.View
+        p.view
 
     let Return value =
         {
-            Id = Fresh.Id()
-            View = View.Const (Success value)
-            Render = id
+            id = Fresh.Id()
+            view = View.Const (Success value)
+            render = id
         }
 
     let ReturnFailure () =
         {
-            Id = Fresh.Id()
-            View = View.Const (Failure [])
-            Render = id
+            id = Fresh.Id()
+            view = View.Const (Failure [])
+            render = id
         }
 
     let Yield value =
         let var = Var.Create value
         {
-            Id = Var.GetId var
-            View = var.View |> View.Map Success
-            Render = fun r -> r var
+            id = Var.GetId var
+            view = var.View |> View.Map Success
+            render = fun r -> r var
         }
 
     let YieldFailure () =
         let var = Var.Create Unchecked.defaultof<_>
         let view = var.View
         {
-            Id = Var.GetId var
-            View = View.SnapshotOn (Failure []) view (view |> View.Map Success)
-            Render = fun r -> r var
+            id = Var.GetId var
+            view = View.SnapshotOn (Failure []) view (view |> View.Map Success)
+            render = fun r -> r var
         }
 
     let YieldOption init noneValue =
         let var = Var.Create (defaultArg init noneValue)
         {
-            Id = Var.GetId var
-            View = var.View |> View.Map (fun x ->
+            id = Var.GetId var
+            view = var.View |> View.Map (fun x ->
                 Success (if x = noneValue then None else Some x))
-            Render = fun r -> r var
+            render = fun r -> r var
         }
 
     let Apply pf px =
         {
-            Id = Fresh.Id()
-            View = View.Map2 Result.Apply pf.View px.View
-            Render = pf.Render >> px.Render
+            id = Fresh.Id()
+            view = View.Map2 Result.Apply pf.view px.view
+            render = pf.render >> px.render
         }
 
     let ApJoin pf px =
         {
-            Id = Fresh.Id()
-            View = View.Map2 Result.ApJoin pf.View px.View
-            Render = pf.Render >> px.Render
+            id = Fresh.Id()
+            view = View.Map2 Result.ApJoin pf.view px.view
+            render = pf.render >> px.render
         }
 
     let WithSubmit p =
-        let submitter = Submitter.Create p.View (Failure [])
+        let submitter = Submitter.Create p.view (Failure [])
         {
-            Id = Fresh.Id()
-            View = submitter.View
-            Render = fun r -> p.Render r submitter
+            id = Fresh.Id()
+            view = submitter.View
+            render = fun r -> p.render r submitter
         }
 
     let TransmitView p =
         {
-            Id = p.Id
-            View = p.View
-            Render = fun x -> p.Render x p.View
+            id = p.id
+            view = p.view
+            render = fun x -> p.render x p.view
         }
 
     let TransmitViewMapResult f p =
         {
-            Id = p.Id
-            View = p.View
-            Render = fun x -> p.Render x (View.Map f p.View)
+            id = p.id
+            view = p.view
+            render = fun x -> p.render x (View.Map f p.view)
         }
 
     let TransmitViewMap f p =
@@ -379,9 +393,9 @@ module Piglet =
 
     let MapResult f p : Piglet<_, _ -> _> =
         {
-            Id = p.Id
-            View = View.Map f p.View
-            Render = p.Render
+            id = p.id
+            view = View.Map f p.view
+            render = p.render
         }
 
     let MapToResult f p =
@@ -392,9 +406,9 @@ module Piglet =
 
     let MapAsyncResult f p : Piglet<_, _ -> _> =
         {
-            Id = p.Id
-            View = View.MapAsync f p.View
-            Render = p.Render
+            id = p.id
+            view = View.MapAsync f p.view
+            render = p.render
         }
 
     let MapToAsyncResult f p =
@@ -413,9 +427,9 @@ module Piglet =
 
     let MapRenderArgs f p =
         {
-            Id = p.Id
-            View = p.View
-            Render = fun g -> g (p.Render f)
+            id = p.id
+            view = p.view
+            render = fun g -> g (p.render f)
         }
 
     let FlushErrors p =
@@ -431,9 +445,9 @@ module Piglet =
     let ManyPiglet inits create p =
         let m = Many.Collection(p, inits, create)
         {
-            Id = Fresh.Id()
-            View = m.View
-            Render = fun f -> f m
+            id = Fresh.Id()
+            view = m.View
+            render = fun f -> f m
         }
 
     [<JavaScript>]
@@ -441,17 +455,17 @@ module Piglet =
         let pInit = p init
         let m = Many.CollectionWithDefault(p, inits, pInit, init)
         {
-            Id = Fresh.Id()
-            View = m.View
-            Render = fun f -> f m
+            id = Fresh.Id()
+            view = m.View
+            render = fun f -> f m
         }
 
     let Dependent input output =
         let c = Dependent(input, output)
         {
-            Id = Fresh.Id()
-            View = c.View
-            Render = fun f -> f c
+            id = Fresh.Id()
+            view = c.View
+            render = fun f -> f c
         }
 
     type Builder =
@@ -475,7 +489,7 @@ module Validation =
     let Is pred msg p =
         p |> Piglet.MapResult (fun res ->
             match res with
-            | Success x -> if pred x then res else Failure [ErrorMessage(p.Id, msg)]
+            | Success x -> if pred x then res else Failure [ErrorMessage(p.id, msg)]
             | Failure _ -> res
         )
 
@@ -532,5 +546,5 @@ type View =
         this |> View.Map (fun x ->
             match x with
             | Success _ -> x
-            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = p.Id))
+            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = p.id))
         )

@@ -5,11 +5,19 @@ open WebSharper.UI.Next
 
 [<Sealed>]
 type ErrorMessage =
+    member Id: int
     member Text: string
+    static member Create : id: int * text: string -> ErrorMessage
+    static member Create : Piglet<'T, 'R> * text: string -> ErrorMessage
 
-type Result<'T> =
+and Result<'T> =
     | Success of 'T
     | Failure of list<ErrorMessage>
+
+and [<Sealed>] Piglet<'T, 'R> =
+    member Id : int
+    member View : View<Result<'T>>
+    member Render : 'R
 
 [<Sealed>]
 type Result =
@@ -47,8 +55,6 @@ type Result =
          : errorMessage: string
          * ?id: int
         -> Result<'T>
-
-type Piglet<'T, 'R>
 
 
 /// Piglet constructors and combinators.
