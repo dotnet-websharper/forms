@@ -5,10 +5,65 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="Content/WebSharper.UI.Next.Piglets.Tests.css" />
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
     <script type="text/javascript" src="Content/WebSharper.UI.Next.Piglets.Tests.head.js"></script>
 </head>
 <body>
     <div id="main"></div>
     <script type="text/javascript" src="Content/WebSharper.UI.Next.Piglets.Tests.js"></script>
+    <div data-children-template="Form" style="display:none">
+        <h1>Contacts:</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody data-hole="Items" data-children-template="Item">
+                <tr>
+                    <td>$!{Name}</td>
+                    <td>$!{Contact}</td>
+                    <td data-hole="MoveUp"></td>
+                    <td data-hole="MoveDown"></td>
+                    <td data-hole="Delete"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="border: solid 1px #888; padding: 10px; margin: 20px; width: 200px">
+            <h3>Add a new contact</h3>
+            <div data-replace="Adder" data-children-template="Adder">
+                <p>
+                    <input data-var="Name" />
+                    <span data-hole="NameErrors" class="error"></span>
+                </p>
+                <p>
+                    <div data-replace="ContactType"></div>
+                    <div data-hole="Contact" data-children-template="Contact">
+                        <input data-var="ContactText" />
+                        <span data-hole="ContactErrors" class="error"></span>
+                    </div>
+                </p>
+                <p>
+                    <button data-event-click="Add">Add</button>
+                </p>
+            </div>
+        </div>
+        <div>
+            <button data-event-click="Submit">Submit</button>
+        </div>
+        <div data-hole="SubmitResults">
+            <p data-template="SubmitSuccess">
+                You registered a contact: ${Name} (${Contact})
+            </p>
+            <p data-template="SubmitError" class="error">
+                ${Message}
+            </p>
+        </div>
+    </div>
 </body>
 </html>

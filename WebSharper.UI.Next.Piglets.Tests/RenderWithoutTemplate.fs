@@ -1,4 +1,4 @@
-namespace WebSharper.Piglets.Next.Tests
+﻿namespace WebSharper.Piglets.Next.Tests
 
 open WebSharper
 open WebSharper.JavaScript
@@ -6,49 +6,13 @@ open WebSharper.UI.Next
 open WebSharper.UI.Next.Html
 open WebSharper.UI.Next.Client
 open WebSharper.UI.Next.Piglets
+open WebSharper.Piglets.Next.Tests.ViewModel
 
 [<JavaScript>]
-module Client =
+module RenderWithoutTemplate =
 
-    type Contact = Email of string | PhoneNumber of string
-
-    module ViewModel =
-
-        let pAddItem() =
-            Piglet.Return (fun x y -> (x, y))
-            <*> (Piglet.Yield "John Doe"
-                |> Validation.IsNotEmpty "Please enter a name.")
-            <*> Piglet.Do {
-                let! isEmail = Piglet.Yield true
-                if isEmail then
-                    return! Piglet.Yield "john@doe.com"
-                        |> Validation.IsMatch @"^.+@.+\..+$" "Please enter a valid email address."
-                        |> Piglet.Map Email
-                else
-                    return! Piglet.Yield "01 234 5678"
-                        |> Validation.Is (fun s -> s.Length >= 6) "Please enter a valid phone number."
-                        |> Piglet.Map PhoneNumber
-            }
-            |> Piglet.WithSubmit
-
-        let pFull() =
-            Piglet.ManyPiglet Seq.empty (pAddItem()) Piglet.Yield
-            |> Validation.Is (not << Seq.isEmpty) "Please enter at least one contact."
-            |> Piglet.WithSubmit
-
-    let ShowErrorMessage v =
-        v |> View.Map (function
-            | Success _ -> Doc.Empty
-            | Failure msgs ->
-                Doc.Concat [
-                    for msg in msgs ->
-                        spanAttr [attr.style "color: red"] [text msg.Text] :> _
-                ]
-        )
-        |> Doc.EmbedView
-
-    let Test() =
-        ViewModel.pFull()
+    let Render() =
+        ViewModel.FullForm()
         |> Piglet.Render (fun items submit ->
             div [
                 h1 [text "Contacts:"]
@@ -117,7 +81,3 @@ module Client =
                 |> Doc.EmbedView
             ]
         )
-
-    let Main =
-        Console.Log("Running JavaScript Entry Point..")
-        Test() |> Doc.RunById "main"
