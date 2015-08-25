@@ -16,7 +16,8 @@ module Client =
 
         let pAddItem() =
             Piglet.Return (fun x y -> (x, y))
-            <*> Piglet.Yield "John Doe"
+            <*> (Piglet.Yield "John Doe"
+                |> Validation.IsNotEmpty "Please enter a name.")
             <*> Piglet.Do {
                 let! isEmail = Piglet.Yield true
                 if isEmail then
@@ -34,6 +35,17 @@ module Client =
             Piglet.ManyPiglet Seq.empty (pAddItem()) Piglet.Yield
             |> Validation.Is (not << Seq.isEmpty) "Please enter at least one contact."
             |> Piglet.WithSubmit
+
+    let ShowErrorMessage v =
+        v |> View.Map (function
+            | Success _ -> Doc.Empty
+            | Failure msgs ->
+                Doc.Concat [
+                    for msg in msgs ->
+                        spanAttr [attr.style "color: red"] [text msg.Text] :> _
+                ]
+        )
+        |> Doc.EmbedView
 
     let Test() =
         ViewModel.pFull()
@@ -57,26 +69,38 @@ module Client =
                                 ))]
                                 td [Doc.ButtonValidate "Move up" [] ops.MoveUp]
                                 td [Doc.ButtonValidate "Move down" [] ops.MoveDown]
-//                                td [buttonAttr [on.click (fun _ _ -> ops.MoveUp())] [text "Move up"]]
-//                                td [buttonAttr [on.click (fun _ _ -> ops.MoveDown())] [text "Move down"]]
                                 td [buttonAttr [on.click (fun _ _ -> ops.Delete())] [text "Delete"]]
                             ]
                         )
                     ]
                 ]
-                h1 [text "Add a new item"]
-                items.RenderAdder (fun rvName csContact submit ->
-                    div [
-                        Doc.Input [] rvName
-                        csContact.Chooser (fun rvContactType ->
-                            div [
-                                label [Doc.Radio [] true rvContactType; text "Email"]
-                                label [Doc.Radio [] false rvContactType; text "Phone number"]
-                            ])
-                        csContact.Choice (Doc.Input [])
-                        Doc.ButtonValidate "Add" [] submit
-                    ])
-                Doc.ButtonValidate "Submit" [] submit
+                divAttr [attr.style "border: solid 1px #888; padding: 10px; margin: 20px"] [
+                    h3 [text "Add a new item"]
+                    items.RenderAdder (fun rvName csContact submit ->
+                        div [
+                            p [
+                                Doc.Input [] rvName
+                                ShowErrorMessage (submit.View.Through rvName)
+                            ]
+                            p [
+                                csContact.Chooser (fun rvContactType ->
+                                    div [
+                                        label [Doc.Radio [] true rvContactType; text "Email"]
+                                        label [Doc.Radio [] false rvContactType; text "Phone number"]
+                                    ]
+                                )
+                                csContact.Choice (fun rvContact ->
+                                    Doc.Concat [
+                                        Doc.Input [] rvContact
+                                        ShowErrorMessage (submit.View.Through rvContact)
+                                    ]
+                                )
+                            ]
+                            p [Doc.Button "Add" [] submit.Trigger]
+                        ]
+                    )
+                ]
+                Doc.Button "Submit" [] submit.Trigger
                 submit.View |> View.Map (function
                     | Success contacts ->
                         div (
@@ -85,10 +109,10 @@ module Client =
                                     match contact with
                                     | Email e -> " (email: " + e + ")"
                                     | PhoneNumber n -> " (phone: " + n + ")"
-                                p [text ("You registered contact: " + string x + contact)] :> Doc
+                                p [text ("You registered a contact: " + string x + contact)] :> Doc
                             )
                         )
-                    | Failure msgs -> div (msgs |> List.map (fun msg -> p [text msg] :> Doc))
+                    | Failure msgs -> divAttr [attr.style "color:red"] [for msg in msgs -> p [text msg.Text] :> _]
                 )
                 |> Doc.EmbedView
             ]

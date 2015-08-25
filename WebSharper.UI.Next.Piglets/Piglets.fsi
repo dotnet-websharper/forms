@@ -1,22 +1,38 @@
 namespace WebSharper.UI.Next.Piglets
 
+open System.Runtime.CompilerServices
 open WebSharper.UI.Next
+
+[<Sealed>]
+type ErrorMessage =
+    member Text: string
 
 type Result<'T> =
     | Success of 'T
-    | Failure of list<string>
+    | Failure of list<ErrorMessage>
 
-module Result =
+[<Sealed>]
+type Result =
 
-    val Map :
-        f: ('T -> 'U) ->
-        r: Result<'T> ->
-        Result<'U>
+    static member Map
+         : f: ('T -> 'U)
+        -> r: Result<'T>
+        -> Result<'U>
 
-    val Apply :
-        rf: Result<'T -> 'U> ->
-        rx: Result<'T> ->
-        Result<'U>
+    static member Apply
+         : rf: Result<'T -> 'U>
+        -> rx: Result<'T>
+        -> Result<'U>
+
+    static member Bind
+         : f: ('T -> Result<'U>)
+        -> r: Result<'T>
+        -> Result<'U>
+
+    static member FailWith
+         : errorMessage: string
+         * ?id: int
+        -> Result<'T>
 
 type Piglet<'T, 'R>
 
@@ -240,3 +256,22 @@ module Doc =
         -> seq<Attr>
         -> Submitter<Result<'T>>
         -> Elt
+
+module private Fresh =
+
+    val Id : unit -> int
+
+[<Extension; Sealed>]
+type View =
+
+    [<Extension>]
+    static member Through
+         : View<Result<'T>>
+         * Var<'U>
+        -> View<Result<'T>>
+
+    [<Extension>]
+    static member Through
+         : View<Result<'T>>
+         * Piglet<'U, 'R>
+        -> View<Result<'T>>

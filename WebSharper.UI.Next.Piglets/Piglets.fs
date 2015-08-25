@@ -1,25 +1,43 @@
 namespace WebSharper.UI.Next.Piglets
 
+open System.Runtime.CompilerServices
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI.Next
 open WebSharper.UI.Next.Client
 open WebSharper.UI.Next.Notation
 
+[<JavaScript; Sealed>]
+type ErrorMessage(id: int, message: string) =
+
+    [<Inline>]
+    member this.Id = id
+
+    [<Inline>]
+    member this.Text = message
+
 [<JavaScript>]
+module Fresh =
+
+    let lastId = ref -1
+
+    let Id() =
+        decr lastId
+        !lastId
+
 type Result<'T> =
     | Success of 'T
-    | Failure of list<string>
+    | Failure of list<ErrorMessage>
  
-[<JavaScript>]
-module Result =
+[<JavaScript; Sealed>]
+type Result =
 
-    let Map (f: 'T -> 'U) (r: Result<'T>) =
+    static member Map (f: 'T -> 'U) (r: Result<'T>) =
         match r with
         | Success x -> Success (f x)
         | Failure m -> Failure m
 
-    let Apply (rf: Result<'T -> 'U>) (rx: Result<'T>) =
+    static member Apply (rf: Result<'T -> 'U>) (rx: Result<'T>) =
         match rf with
         | Failure mf ->
             match rx with
@@ -30,7 +48,7 @@ module Result =
             | Failure mx -> Failure mx
             | Success x -> Success (f x)
 
-    let ApJoin (rf: Result<'T -> 'U>) (rx: Result<Result<'T>>) =
+    static member ApJoin (rf: Result<'T -> 'U>) (rx: Result<Result<'T>>) =
         match rf with
         | Failure mf ->
             match rx with
@@ -42,12 +60,12 @@ module Result =
             | Success (Failure mx) -> Failure mx
             | Success (Success x) -> Success (f x)
 
-    let Bind (f: 'T -> Result<'U>) (rx: Result<'T>) : Result<'U> =
+    static member Bind (f: 'T -> Result<'U>) (rx: Result<'T>) : Result<'U> =
         match rx with
         | Failure m -> Failure m
         | Success x -> f x
 
-    let Append (app: 'T -> 'T -> 'T) (r1: Result<'T>) (r2: Result<'T>) : Result<'T> =
+    static member Append (app: 'T -> 'T -> 'T) (r1: Result<'T>) (r2: Result<'T>) : Result<'T> =
         match r1 with
         | Failure m1 ->
             match r2 with
@@ -58,9 +76,14 @@ module Result =
             | Failure _ -> r2
             | Success x2 -> Success (app x1 x2)
 
+    static member FailWith (errorMessage, ?id) =
+        let id = match id with Some id -> id | None -> Fresh.Id()
+        Failure [ErrorMessage(id, errorMessage)]
+
 [<JavaScript>]
 type Piglet<'T, 'R> =
     {
+        Id : int
         View : View<Result<'T>>
         Render : 'R
     }
@@ -246,6 +269,7 @@ module Piglet =
 
     let Create view (renderBuilder: _ -> _) =
         {
+            Id = Fresh.Id()
             View = view
             Render = renderBuilder
         }
@@ -263,19 +287,23 @@ module Piglet =
 
     let Return value =
         {
+            Id = Fresh.Id()
             View = View.Const (Success value)
             Render = id
         }
 
     let ReturnFailure () =
         {
+            Id = Fresh.Id()
             View = View.Const (Failure [])
             Render = id
         }
 
     let Yield value =
         let var = Var.Create value
-        {   View = var.View |> View.Map Success
+        {
+            Id = Var.GetId var
+            View = var.View |> View.Map Success
             Render = fun r -> r var
         }
 
@@ -283,6 +311,7 @@ module Piglet =
         let var = Var.Create Unchecked.defaultof<_>
         let view = var.View
         {
+            Id = Var.GetId var
             View = View.SnapshotOn (Failure []) view (view |> View.Map Success)
             Render = fun r -> r var
         }
@@ -290,6 +319,7 @@ module Piglet =
     let YieldOption init noneValue =
         let var = Var.Create (defaultArg init noneValue)
         {
+            Id = Var.GetId var
             View = var.View |> View.Map (fun x ->
                 Success (if x = noneValue then None else Some x))
             Render = fun r -> r var
@@ -297,12 +327,14 @@ module Piglet =
 
     let Apply pf px =
         {
+            Id = Fresh.Id()
             View = View.Map2 Result.Apply pf.View px.View
             Render = pf.Render >> px.Render
         }
 
     let ApJoin pf px =
         {
+            Id = Fresh.Id()
             View = View.Map2 Result.ApJoin pf.View px.View
             Render = pf.Render >> px.Render
         }
@@ -310,18 +342,21 @@ module Piglet =
     let WithSubmit p =
         let submitter = Submitter.Create p.View (Failure [])
         {
+            Id = Fresh.Id()
             View = submitter.View
             Render = fun r -> p.Render r submitter
         }
 
     let TransmitView p =
         {
+            Id = p.Id
             View = p.View
             Render = fun x -> p.Render x p.View
         }
 
     let TransmitViewMapResult f p =
         {
+            Id = p.Id
             View = p.View
             Render = fun x -> p.Render x (View.Map f p.View)
         }
@@ -331,6 +366,7 @@ module Piglet =
 
     let MapResult f p : Piglet<_, _ -> _> =
         {
+            Id = p.Id
             View = View.Map f p.View
             Render = p.Render
         }
@@ -343,6 +379,7 @@ module Piglet =
 
     let MapAsyncResult f p : Piglet<_, _ -> _> =
         {
+            Id = p.Id
             View = View.MapAsync f p.View
             Render = p.Render
         }
@@ -363,6 +400,7 @@ module Piglet =
 
     let MapViewArgs f p =
         {
+            Id = p.Id
             View = p.View
             Render = fun g -> g (p.Render f)
         }
@@ -380,6 +418,7 @@ module Piglet =
     let ManyPiglet inits create p =
         let m = Many.Stream(p, inits, create)
         {
+            Id = Fresh.Id()
             View = m.View
             Render = fun f -> f m
         }
@@ -389,6 +428,7 @@ module Piglet =
         let pInit = p init
         let m = Many.UnitStream(p, inits, pInit, init)
         {
+            Id = Fresh.Id()
             View = m.View
             Render = fun f -> f m
         }
@@ -396,6 +436,7 @@ module Piglet =
     let Choose input output =
         let c = Chooser(input, output)
         {
+            Id = Fresh.Id()
             View = c.View
             Render = fun f -> f c
         }
@@ -421,7 +462,7 @@ module Validation =
     let Is pred msg p =
         p |> Piglet.MapResult (fun res ->
             match res with
-            | Success x -> if pred x then res else Failure [msg]
+            | Success x -> if pred x then res else Failure [ErrorMessage(p.Id, msg)]
             | Failure _ -> res
         )
 
@@ -454,3 +495,22 @@ module Doc =
                     (submitter.Input |> View.Map (function Failure _ -> true | Success _ -> false))
             ]
         Doc.Button caption attrs submitter.Trigger
+
+[<Extension; Sealed; JavaScript>]
+type View =
+
+    [<Extension>]
+    static member Through (this: View<Result<'T>>, v: Var<'U>) : View<Result<'T>> =
+        this |> View.Map (fun x ->
+            match x with
+            | Success _ -> x
+            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = Var.GetId v))
+        )
+
+    [<Extension>]
+    static member Through (this: View<Result<'T>>, p: Piglet<'U, 'R>) : View<Result<'T>> =
+        this |> View.Map (fun x ->
+            match x with
+            | Success _ -> x
+            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = p.Id))
+        )
