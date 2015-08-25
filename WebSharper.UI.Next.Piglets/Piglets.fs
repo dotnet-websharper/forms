@@ -111,168 +111,172 @@ module Utils =
                 d.[x] <- y
                 y
 
-[<Sealed; JavaScript>]
-type Chooser<'Out, 'In, 'U, 'V, 'W, 'X when 'In : equality and 'X :> Doc> (chooser: Piglet<'In, 'U -> 'V>, choice: 'In -> Piglet<'Out, 'W -> 'X>) =
-
-    let choice = memoize choice
-
-    let pOut =
-        chooser.View
-        |> View.Map (function
-            | Success i -> Success (choice i)
-            | Failure m -> Failure m)
-
-    let out =
-        pOut |> View.Bind (function
-            | Success p -> p.View
-            | Failure m -> View.Const (Failure m))
-        
-    member this.View : View<Result<'Out>> = out
-
-    member this.Chooser (f: 'U) : 'V =
-        chooser.Render f
-
-    member this.Choice (f: 'W) : Doc =
-        pOut
-        |> View.Map (function
-            | Success p -> p.Render f :> Doc
-            | Failure _ -> Doc.Empty)
-        |> Doc.EmbedView
-
-[<JavaScript>]
-module Many =
-
-    type ItemOperations(delete: unit -> unit, moveUp: Submitter<Result<bool>>, moveDown: Submitter<Result<bool>>) =
-        member this.Delete() = delete()
-        member this.MoveUp = moveUp
-        member this.MoveDown = moveDown
-
-    type System.Collections.Generic.List<'T> with
-        member this.Swap(i, j) =
-            let tmp = this.[i]
-            this.[i] <- this.[j]
-            this.[j] <- tmp
-
-    module Array =
-
-        let MapReduce (f: 'A -> 'B) (z: 'B) (re: 'B -> 'B -> 'B) (a: 'A[]) : 'B =
-            let rec loop off len =
-                match len with
-                | n when n <= 0 -> z
-                | 1 when off >= 0 && off < a.Length ->
-                    f a.[off]
-                | n ->
-                    let l2 = len / 2
-                    let a = loop off l2
-                    let b = loop (off + l2) (len - l2)
-                    re a b
-            loop 0 a.Length
-
-    module Fresh =
-
-        let Int =
-            let x = ref 0
-            fun () ->
-                incr x
-                !x
-
-    type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Piglet<'T, 'V -> 'W>, inits: seq<'T>, adder : Piglet<'T, 'Y -> 'Z>) =
-        let arr = ResizeArray()
-        let var = Var.Create arr
-        let mk (x: 'T) =
-            let ident = Fresh.Int()
-            let getThisIndexIn = Seq.findIndex (fun (_, _, j) -> ident = j)
-            let vIndex = var.View |> View.Map getThisIndexIn
-            let delete() =
-                let k = getThisIndexIn arr
-                arr.RemoveAt k
-                Var.Update var id
-            let sMoveUp =
-                let inp = vIndex |> View.Map (fun i ->
-                    if i = 0 then Failure [] else Success true
-                )
-                Submitter.Create inp (if arr.Count = 0 then Failure [] else Success false)
-            let vMoveUp =
-                sMoveUp.View |> View.Map (function
-                    | Success true ->
-                        let i = getThisIndexIn arr
-                        arr.Swap(i, i - 1)
-                        Var.Update var id
-                    | _ -> ()
-                )
-            let sMoveDown =
-                let inp = vIndex |> View.Map (fun i ->
-                    if i = arr.Count - 1 then Failure [] else Success true
-                )
-                Submitter.Create inp (Failure [])
-            let vMoveDown =
-                sMoveDown.View |> View.Map (function
-                    | Success true ->
-                        let i = getThisIndexIn arr
-                        arr.Swap(i, i + 1)
-                        Var.Update var id
-                    | _ -> ()
-                )
-            let p = p x
-            let v = View.Map2 (fun x () -> x) p.View (View.Map2 (fun () () -> ()) vMoveUp vMoveDown)
-            let p = { p with View = v }
-            p, ItemOperations(delete, sMoveUp, sMoveDown), ident
-        do Seq.iter (mk >> arr.Add) inits
-
-        let changesView =
-            var.View
-            |> View.Bind (fun arr ->
-                arr.ToArray()
-                |> Array.MapReduce
-                    (fun (p, _, _ as x) -> p.View |> View.Map (fun _ -> Seq.singleton x))
-                    (View.Const Seq.empty)
-                    (View.Map2 Seq.append)
-            )
-
-        let add x =
-            arr.Add(mk x)
-            Var.Update var id
-
-        let adderView x =
-            match x with
-            | Failure _ -> ()
-            | Success x -> add x
-            Doc.Empty
-
-        let out =
-            var.View
-            |> View.Bind (fun s ->
-                s.ToArray()
-                |> Array.MapReduce
-                    (fun (p, _, _) -> p.View |> View.Map (Result.Map Seq.singleton))
-                    (View.Const (Success Seq.empty))
-                    (View.Map2 (Result.Append Seq.append))
-            )
-
-        member this.View = out
-
-        member this.Render (f: ItemOperations -> 'V) : Doc =
-            changesView
-            |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
-                p.Render (f ops) :> Doc
-            )
-
-        member this.Add (x: 'T) =
-            add x
-
-        member this.RenderAdder f =
-            adder.Render f
-            |> Doc.Append (adder.View |> View.Map adderView |> Doc.EmbedView)
-
-    [<Class>]
-    type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> (p, inits, pInit, ``default``) =
-        inherit Collection<'T, 'V, 'W, 'V, 'W> (p, inits, pInit)
-
-        member this.Add() = this.Add ``default``
 
 [<JavaScript>]
 module Piglet =
 
+    [<Sealed; JavaScript>]
+    type Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X when 'TPrimary : equality and 'V :> Doc and 'X :> Doc>
+        (
+            chooser: Piglet<'TPrimary, 'U -> 'V>,
+            choice: 'TPrimary -> Piglet<'TResult, 'W -> 'X>
+        ) =
+
+        let choice = memoize choice
+
+        let pOut =
+            chooser.View
+            |> View.Map (function
+                | Success i -> Success (choice i)
+                | Failure m -> Failure m)
+
+        let out =
+            pOut |> View.Bind (function
+                | Success p -> p.View
+                | Failure m -> View.Const (Failure m))
+        
+        member this.View : View<Result<'TResult>> = out
+
+        member this.RenderPrimary (f: 'U) : Doc =
+            chooser.Render f :> Doc
+
+        member this.RenderDependent (f: 'W) : Doc =
+            pOut
+            |> View.Map (function
+                | Success p -> p.Render f :> Doc
+                | Failure _ -> Doc.Empty)
+            |> Doc.EmbedView
+
+    [<JavaScript>]
+    module Many =
+
+        type ItemOperations(delete: unit -> unit, moveUp: Submitter<Result<bool>>, moveDown: Submitter<Result<bool>>) =
+            member this.Delete() = delete()
+            member this.MoveUp = moveUp
+            member this.MoveDown = moveDown
+
+        type System.Collections.Generic.List<'T> with
+            member this.Swap(i, j) =
+                let tmp = this.[i]
+                this.[i] <- this.[j]
+                this.[j] <- tmp
+
+        module Array =
+
+            let MapReduce (f: 'A -> 'B) (z: 'B) (re: 'B -> 'B -> 'B) (a: 'A[]) : 'B =
+                let rec loop off len =
+                    match len with
+                    | n when n <= 0 -> z
+                    | 1 when off >= 0 && off < a.Length ->
+                        f a.[off]
+                    | n ->
+                        let l2 = len / 2
+                        let a = loop off l2
+                        let b = loop (off + l2) (len - l2)
+                        re a b
+                loop 0 a.Length
+
+        module Fresh =
+
+            let Int =
+                let x = ref 0
+                fun () ->
+                    incr x
+                    !x
+
+        type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Piglet<'T, 'V -> 'W>, inits: seq<'T>, adder : Piglet<'T, 'Y -> 'Z>) =
+            let arr = ResizeArray()
+            let var = Var.Create arr
+            let mk (x: 'T) =
+                let ident = Fresh.Int()
+                let getThisIndexIn = Seq.findIndex (fun (_, _, j) -> ident = j)
+                let vIndex = var.View |> View.Map getThisIndexIn
+                let delete() =
+                    let k = getThisIndexIn arr
+                    arr.RemoveAt k
+                    Var.Update var id
+                let sMoveUp =
+                    let inp = vIndex |> View.Map (fun i ->
+                        if i = 0 then Failure [] else Success true
+                    )
+                    Submitter.Create inp (if arr.Count = 0 then Failure [] else Success false)
+                let vMoveUp =
+                    sMoveUp.View |> View.Map (function
+                        | Success true ->
+                            let i = getThisIndexIn arr
+                            arr.Swap(i, i - 1)
+                            Var.Update var id
+                        | _ -> ()
+                    )
+                let sMoveDown =
+                    let inp = vIndex |> View.Map (fun i ->
+                        if i = arr.Count - 1 then Failure [] else Success true
+                    )
+                    Submitter.Create inp (Failure [])
+                let vMoveDown =
+                    sMoveDown.View |> View.Map (function
+                        | Success true ->
+                            let i = getThisIndexIn arr
+                            arr.Swap(i, i + 1)
+                            Var.Update var id
+                        | _ -> ()
+                    )
+                let p = p x
+                let v = View.Map2 (fun x () -> x) p.View (View.Map2 (fun () () -> ()) vMoveUp vMoveDown)
+                let p = { p with View = v }
+                p, ItemOperations(delete, sMoveUp, sMoveDown), ident
+            do Seq.iter (mk >> arr.Add) inits
+
+            let changesView =
+                var.View
+                |> View.Bind (fun arr ->
+                    arr.ToArray()
+                    |> Array.MapReduce
+                        (fun (p, _, _ as x) -> p.View |> View.Map (fun _ -> Seq.singleton x))
+                        (View.Const Seq.empty)
+                        (View.Map2 Seq.append)
+                )
+
+            let add x =
+                arr.Add(mk x)
+                Var.Update var id
+
+            let adderView x =
+                match x with
+                | Failure _ -> ()
+                | Success x -> add x
+                Doc.Empty
+
+            let out =
+                var.View
+                |> View.Bind (fun s ->
+                    s.ToArray()
+                    |> Array.MapReduce
+                        (fun (p, _, _) -> p.View |> View.Map (Result.Map Seq.singleton))
+                        (View.Const (Success Seq.empty))
+                        (View.Map2 (Result.Append Seq.append))
+                )
+
+            member this.View = out
+
+            member this.Render (f: ItemOperations -> 'V) : Doc =
+                changesView
+                |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
+                    p.Render (f ops) :> Doc
+                )
+
+            member this.Add (x: 'T) =
+                add x
+
+            member this.RenderAdder f =
+                adder.Render f
+                |> Doc.Append (adder.View |> View.Map adderView |> Doc.EmbedView)
+
+        [<Class>]
+        type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> (p, inits, pInit, ``default``) =
+            inherit Collection<'T, 'V, 'W, 'V, 'W> (p, inits, pInit)
+
+            member this.Add() = this.Add ``default``
     [<Inline>]
     let (>>^) v f = fun g -> g (v f)
 
@@ -442,8 +446,8 @@ module Piglet =
             Render = fun f -> f m
         }
 
-    let Choose input output =
-        let c = Chooser(input, output)
+    let Dependent input output =
+        let c = Dependent(input, output)
         {
             Id = Fresh.Id()
             View = c.View
@@ -453,7 +457,7 @@ module Piglet =
     type Builder =
         | Do
 
-        member this.Bind(p, f) = Choose p f
+        member this.Bind(p, f) = Dependent p f
 
         member this.Return x = Return x
 

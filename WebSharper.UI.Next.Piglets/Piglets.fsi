@@ -50,63 +50,64 @@ type Result =
 
 type Piglet<'T, 'R>
 
-/// Operations related to Piglets of collections.
-module Many =
-
-    /// Operations applicable to an item in a Piglet of collections.
-    [<Class>]
-    type ItemOperations =
-
-        /// Delete the current item from the collection.
-        member Delete : unit -> unit
-
-        /// Move the current item up one step in the collection.
-        member MoveUp : Submitter<Result<bool>>
-
-        /// Move the current item down one step in the collection.
-        member MoveDown : Submitter<Result<bool>>
-
-    /// Operations applicable to a Piglet of collections.
-    [<Class>]
-    type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> =
-
-        /// A view on the resulting collection.
-        member View : View<Result<seq<'T>>>
-
-        /// Render the element collection inside this Piglet
-        /// with the provided rendering function.
-        member Render : (ItemOperations -> 'V) -> Doc
-
-        /// Stream where new elements for the collection are written.
-        member Add : 'T -> unit
-
-        /// Render the Piglet that inserts new items into the collection.
-        member RenderAdder : 'Y -> Doc
-
-    /// Operations applicable to a Piglet of collections
-    /// with a provided default new value to insert.
-    [<Class>]
-    type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> =
-        inherit Collection<'T,'V,'W,'V,'W>
-
-        /// Add an element to the collection set to the default value.
-        member Add : unit -> unit
-
-/// Operations applicable to a dependent Piglet.
-[<Sealed>]
-type Chooser<'Out, 'In, 'U, 'V, 'W, 'X when 'In : equality and 'X :> Doc> =
-        
-    /// A view on the result of the dependent Piglet.
-    member View : View<Result<'Out>>
-
-    /// Render the static part of a dependent Piglet.
-    member Chooser : 'U -> 'V
-
-    /// Render the dynamic part of a dependent Piglet.
-    member Choice : 'W -> Doc
 
 /// Piglet constructors and combinators.
 module Piglet =
+
+    /// Operations related to Piglets of collections.
+    module Many =
+
+        /// Operations applicable to an item in a Piglet of collections.
+        [<Class>]
+        type ItemOperations =
+
+            /// Delete the current item from the collection.
+            member Delete : unit -> unit
+
+            /// Move the current item up one step in the collection.
+            member MoveUp : Submitter<Result<bool>>
+
+            /// Move the current item down one step in the collection.
+            member MoveDown : Submitter<Result<bool>>
+
+        /// Operations applicable to a Piglet of collections.
+        [<Class>]
+        type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> =
+
+            /// A view on the resulting collection.
+            member View : View<Result<seq<'T>>>
+
+            /// Render the element collection inside this Piglet
+            /// with the provided rendering function.
+            member Render : (ItemOperations -> 'V) -> Doc
+
+            /// Stream where new elements for the collection are written.
+            member Add : 'T -> unit
+
+            /// Render the Piglet that inserts new items into the collection.
+            member RenderAdder : 'Y -> Doc
+
+        /// Operations applicable to a Piglet of collections
+        /// with a provided default new value to insert.
+        [<Class>]
+        type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> =
+            inherit Collection<'T,'V,'W,'V,'W>
+
+            /// Add an element to the collection set to the default value.
+            member Add : unit -> unit
+
+    /// Operations applicable to a dependent Piglet.
+    [<Sealed>]
+    type Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X when 'TPrimary : equality and 'V :> Doc and 'X :> Doc> =
+        
+        /// A view on the result of the dependent Piglet.
+        member View : View<Result<'TResult>>
+
+        /// Render the primary part of a dependent Piglet.
+        member RenderPrimary : 'U -> Doc
+
+        /// Render the dependent part of a dependent Piglet.
+        member RenderDependent : 'W -> Doc
 
     /// Create a Piglet from a view and a render builder.
     val Create
@@ -245,12 +246,12 @@ module Piglet =
         -> Piglet<'T, 'R -> 'D>
         -> Piglet<'T, 'R -> 'D>
 
-    /// Create a dynamic Piglet where the `output` part depends on an `input` Piglet.
-    val Choose
-         : input: Piglet<'In, 'U -> 'V>
-        -> output: ('In -> Piglet<'Out, 'W -> 'X>)
-        -> Piglet<'Out, (Chooser<'Out, 'In, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
-        when 'In : equality and 'X :> Doc
+    /// Create a dependent Piglet where a `dependent` Piglet depends on the value of a `primary` Piglet.
+    val Dependent
+         : primary: Piglet<'TPrimary, 'U -> 'V>
+        -> dependent: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
+        -> Piglet<'TResult, (Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
+        when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
     /// Create a Piglet that returns a collection of values,
     /// with an additional piglet used to insert new values in the collection.
@@ -272,8 +273,11 @@ module Piglet =
     type Builder =
         | Do
 
-        /// Create a dynamic Piglet where the `output` part depends on an `input` Piglet.
-        member Bind : input: Piglet<'In, 'U -> 'V> * output: ('In -> Piglet<'Out, 'W -> 'X>) -> Piglet<'Out, (Chooser<'Out, 'In, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
+        /// Create a dependent Piglet where the `output` part depends on an `input` Piglet.
+        member Bind
+             : input: Piglet<'TPrimary, 'U -> 'V>
+             * output: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
+            -> Piglet<'TResult, (Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
 
         /// Create a Piglet that always returns the same successful value.
         member Return : 'T -> Piglet<'T, 'D -> 'D>

@@ -38,7 +38,7 @@ module RenderWithTemplate =
                             Name = rvName,
                             NameErrors = [ShowErrorMessage (submit.View.Through rvName)],
                             ContactType = [
-                                csContact.Chooser(fun rvContactType ->
+                                csContact.RenderPrimary (fun rvContactType ->
                                     Doc.Concat [
                                         label [Doc.Radio [] true rvContactType; text "Email"]
                                         label [Doc.Radio [] false rvContactType; text "Phone number"]
@@ -46,7 +46,7 @@ module RenderWithTemplate =
                                 )
                             ],
                             Contact = [
-                                csContact.Choice (fun rvContact ->
+                                csContact.RenderDependent (fun rvContact ->
                                     Template.Contact.Doc(
                                         ContactText = rvContact,
                                         ContactErrors = [ShowErrorMessage (submit.View.Through rvContact)]
