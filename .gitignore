@@ -1,0 +1,10 @@
+*.suo
+*.user
+.vs/
+build/
+packages/
+tools/packages/
+build/
+*.Tests/Content/
+**/bin/
+**/obj/
