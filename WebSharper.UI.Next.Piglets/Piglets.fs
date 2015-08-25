@@ -252,8 +252,7 @@ module Many =
         member this.View = out
 
         member this.Render (f: ItemOperations -> 'V) : Doc =
-            var.View
-            |> View.Map (fun arr -> arr :> seq<_>)
+            changesView
             |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
                 p.Render (f ops) :> Doc
             )
