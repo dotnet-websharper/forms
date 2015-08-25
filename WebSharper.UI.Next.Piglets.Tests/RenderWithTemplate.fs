@@ -26,9 +26,9 @@ module RenderWithTemplate =
                                 | _, Email x -> "email: " + x
                                 | _, PhoneNumber x -> "phone: " + x)
                             ),
-                            MoveUp = [Doc.ButtonValidate "Move up" [] ops.MoveUp],
-                            MoveDown = [Doc.ButtonValidate "Move down" [] ops.MoveDown],
-                            Delete = [Doc.Button "Delete" [] ops.Delete]
+                            MoveUp = Attr.SubmitterValidate ops.MoveUp,
+                            MoveDown = Attr.SubmitterValidate ops.MoveDown,
+                            Delete = on.click (fun _ _ -> ops.Delete())
                         )
                     )
                 ],

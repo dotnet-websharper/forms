@@ -492,18 +492,25 @@ module Pervasives =
         Piglet.ApJoin pf px
 
 [<JavaScript>]
+module Attr =
+
+    open WebSharper.UI.Next.Html
+    open WebSharper.UI.Next.Client
+
+    let SubmitterValidate (submitter: Submitter<_>) =
+        Attr.Append
+            (on.click (fun _ _ -> submitter.Trigger()))
+            (attr.disabledDynPred (View.Const "disabled")
+                (submitter.Input |> View.Map Result.IsFailure))
+
+[<JavaScript>]
 module Doc =
 
     open WebSharper.UI.Next.Html
     open WebSharper.UI.Next.Client
 
     let ButtonValidate caption attrs (submitter: Submitter<_>) =
-        let attrs =
-            attrs |> Seq.append [
-                attr.disabledDynPred (View.Const "disabled")
-                    (submitter.Input |> View.Map Result.IsFailure)
-            ]
-        Doc.Button caption attrs submitter.Trigger
+        buttonAttr (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
 
 [<Extension; Sealed; JavaScript>]
 type View =

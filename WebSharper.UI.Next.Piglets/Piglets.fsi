@@ -320,6 +320,14 @@ module Pervasives =
         -> px: Piglet<Result<'T>, 'R1 -> 'D>
         -> Piglet<'U, 'R -> 'D>
 
+module Attr =
+
+    /// Add a click handler that triggers a Submitter,
+    /// and disable the element when the submitter's input is a failure.
+    val SubmitterValidate
+         : Submitter<Result<'T>>
+        -> Attr
+
 module Doc =
 
     /// Create a button that triggers a Submitter when clicked,
