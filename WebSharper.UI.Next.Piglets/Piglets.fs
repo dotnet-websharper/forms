@@ -142,7 +142,7 @@ type Chooser<'Out, 'In, 'U, 'V, 'W, 'X when 'In : equality and 'X :> Doc> (choos
 [<JavaScript>]
 module Many =
 
-    type Operations(delete: unit -> unit, moveUp: Submitter<Result<bool>>, moveDown: Submitter<Result<bool>>) =
+    type ItemOperations(delete: unit -> unit, moveUp: Submitter<Result<bool>>, moveDown: Submitter<Result<bool>>) =
         member this.Delete() = delete()
         member this.MoveUp = moveUp
         member this.MoveDown = moveDown
@@ -176,7 +176,7 @@ module Many =
                 incr x
                 !x
 
-    type Stream<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Piglet<'T, 'V -> 'W>, inits: seq<'T>, adder : Piglet<'T, 'Y -> 'Z>) =
+    type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Piglet<'T, 'V -> 'W>, inits: seq<'T>, adder : Piglet<'T, 'Y -> 'Z>) =
         let arr = ResizeArray()
         let var = Var.Create arr
         let mk (x: 'T) =
@@ -216,7 +216,7 @@ module Many =
             let p = p x
             let v = View.Map2 (fun x () -> x) p.View (View.Map2 (fun () () -> ()) vMoveUp vMoveDown)
             let p = { p with View = v }
-            p, Operations(delete, sMoveUp, sMoveDown), ident
+            p, ItemOperations(delete, sMoveUp, sMoveDown), ident
         do Seq.iter (mk >> arr.Add) inits
 
         let changesView =
@@ -251,7 +251,7 @@ module Many =
 
         member this.View = out
 
-        member this.Render (f: Operations -> 'V) : Doc =
+        member this.Render (f: ItemOperations -> 'V) : Doc =
             var.View
             |> View.Map (fun arr -> arr :> seq<_>)
             |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
@@ -266,8 +266,8 @@ module Many =
             |> Doc.Append (adder.View |> View.Map adderView |> Doc.EmbedView)
 
     [<Class>]
-    type UnitStream<'T, 'V, 'W when 'W :> Doc> (p, inits, pInit, ``default``) =
-        inherit Stream<'T, 'V, 'W, 'V, 'W> (p, inits, pInit)
+    type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> (p, inits, pInit, ``default``) =
+        inherit Collection<'T, 'V, 'W, 'V, 'W> (p, inits, pInit)
 
         member this.Add() = this.Add ``default``
 
@@ -408,7 +408,7 @@ module Piglet =
             | Failure m -> async { return Failure m }
         MapAsyncResult f p
 
-    let MapViewArgs f p =
+    let MapRenderArgs f p =
         {
             Id = p.Id
             View = p.View
@@ -426,7 +426,7 @@ module Piglet =
 
     [<JavaScript>]
     let ManyPiglet inits create p =
-        let m = Many.Stream(p, inits, create)
+        let m = Many.Collection(p, inits, create)
         {
             Id = Fresh.Id()
             View = m.View
@@ -436,7 +436,7 @@ module Piglet =
     [<JavaScript>]
     let Many inits init p =
         let pInit = p init
-        let m = Many.UnitStream(p, inits, pInit, init)
+        let m = Many.CollectionWithDefault(p, inits, pInit, init)
         {
             Id = Fresh.Id()
             View = m.View
