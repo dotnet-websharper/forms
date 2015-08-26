@@ -40,20 +40,20 @@ module RenderWithoutTemplate =
                 ]
                 divAttr [attr.style "border: solid 1px #888; padding: 10px; margin: 20px"] [
                     h3 [text "Add a new item"]
-                    items.RenderAdder (fun rvName dContact submit ->
+                    items.RenderAdder (fun rvName depContact submit ->
                         div [
                             p [
                                 Doc.Input [] rvName
                                 ShowErrorMessage (submit.View.Through rvName)
                             ]
                             p [
-                                dContact.RenderPrimary (fun rvContactType ->
+                                depContact.RenderPrimary (fun rvContactType ->
                                     div [
                                         label [Doc.Radio [] true rvContactType; text "Email"]
                                         label [Doc.Radio [] false rvContactType; text "Phone number"]
                                     ]
                                 )
-                                dContact.RenderDependent (fun rvContact ->
+                                depContact.RenderDependent (fun rvContact ->
                                     Doc.Concat [
                                         Doc.Input [] rvContact
                                         ShowErrorMessage (submit.View.Through rvContact)
