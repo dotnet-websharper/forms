@@ -3,7 +3,7 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.UI.Next.Piglets").Verbose()
+    BuildTool().PackageId("WebSharper.UI.Next.Piglets")
         .VersionFrom("WebSharper")
         .WithFramework(fun fw -> fw.Net40)
 
