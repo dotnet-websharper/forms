@@ -1,6 +1,7 @@
 namespace WebSharper.UI.Next.Piglets
 
 open System.Runtime.CompilerServices
+open WebSharper
 open WebSharper.UI.Next
 
 [<Sealed>]
@@ -83,11 +84,11 @@ module Piglet =
             /// A view on the resulting collection.
             member View : View<Result<seq<'T>>>
 
-            /// Render the element collection inside this Piglet
+            /// Render the item collection inside this Piglet
             /// with the provided rendering function.
             member Render : (ItemOperations -> 'V) -> Doc
 
-            /// Stream where new elements for the collection are written.
+            /// Stream where new items for the collection are written.
             member Add : 'T -> unit
 
             /// Render the Piglet that inserts new items into the collection.
@@ -99,7 +100,8 @@ module Piglet =
         type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> =
             inherit Collection<'T,'V,'W,'V,'W>
 
-            /// Add an element to the collection set to the default value.
+            /// Add an item to the collection set to the default value.
+            [<Name "AddOne">]
             member Add : unit -> unit
 
     /// Operations applicable to a dependent Piglet.
@@ -126,6 +128,34 @@ module Piglet =
          : renderFunction: 'R
         -> Piglet<'T, 'R -> #Doc>
         -> Doc
+
+    /// Render the items of a Collection with the provided rendering function.
+    val RenderMany
+            : Many.Collection<'T, 'V, 'W, 'Y, 'Z>
+        -> (Many.ItemOperations -> 'V)
+        -> Doc
+        when 'W :> Doc and 'Z :> Doc
+
+    /// Render the Piglet that inserts new items into a Collection.
+    val RenderManyAdder
+            : Many.Collection<'T, 'V, 'W, 'Y, 'Z>
+        -> 'Y
+        -> Doc
+        when 'W :> Doc and 'Z :> Doc
+
+    /// Render the primary part of a dependent Piglet.
+    val RenderPrimary
+         : Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X>
+        -> 'U
+        -> Doc
+        when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
+
+    /// Render the dependent part of a dependent Piglet.
+    val RenderDependent
+         : Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X>
+        -> 'W
+        -> Doc
+        when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
     /// Get the view of a Piglet.
     val GetView

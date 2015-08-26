@@ -291,6 +291,7 @@ module Piglet =
             inherit Collection<'T, 'V, 'W, 'V, 'W> (p, inits, pInit)
 
             member this.Add() = this.Add ``default``
+
     [<Inline>]
     let (>>^) v f = fun g -> g (v f)
 
@@ -308,6 +309,18 @@ module Piglet =
             |> View.Map (fun _ -> Doc.Empty)
             |> Doc.EmbedView
         )
+
+    let RenderMany (c: Many.Collection<_,_,_,_,_>) f =
+        c.Render f
+
+    let RenderManyAdder (c: Many.Collection<_,_,_,_,_>) f =
+        c.RenderAdder f
+
+    let RenderPrimary (d: Dependent<_,_,_,_,_,_>) f =
+        d.RenderPrimary f
+
+    let RenderDependent (d: Dependent<_,_,_,_,_,_>) f =
+        d.RenderDependent f
 
     let GetView (p: Piglet<_, _ -> _>) =
         p.view
