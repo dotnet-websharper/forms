@@ -178,6 +178,11 @@ module Piglet =
          : init: 'T
         -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
 
+    /// Create a Piglet that returns a reactive value.
+    val YieldVar
+         : Var<'T>
+        -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
+
     /// Create a Piglet that returns a reactive value, initialized to failure.
     val YieldFailure
          : unit

@@ -339,13 +339,15 @@ module Piglet =
             render = id
         }
 
-    let Yield value =
-        let var = Var.Create value
+    let YieldVar var =
         {
             id = Var.GetId var
             view = var.View |> View.Map Success
             render = fun r -> r var
         }
+
+    let Yield value =
+        YieldVar (Var.Create value)
 
     let YieldFailure () =
         let var = Var.Create Unchecked.defaultof<_>
