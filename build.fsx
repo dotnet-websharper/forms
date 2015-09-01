@@ -4,7 +4,7 @@ open IntelliFactory.Build
 
 let bt =
     BuildTool().PackageId("WebSharper.UI.Next.Piglets")
-        .VersionFrom("WebSharper")
+        .VersionFrom("WebSharper", "alpha")
         .WithFramework(fun fw -> fw.Net40)
 
 let main =
