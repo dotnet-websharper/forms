@@ -106,7 +106,7 @@ module Piglet =
 
     /// Operations applicable to a dependent Piglet.
     [<Sealed>]
-    type Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X when 'TPrimary : equality and 'V :> Doc and 'X :> Doc> =
+    type Dependent<'TResult, 'U, 'W> =
         
         /// A view on the result of the dependent Piglet.
         member View : View<Result<'TResult>>
@@ -145,17 +145,15 @@ module Piglet =
 
     /// Render the primary part of a dependent Piglet.
     val RenderPrimary
-         : Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X>
+         : Dependent<'TResult, 'U, 'W>
         -> 'U
         -> Doc
-        when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
     /// Render the dependent part of a dependent Piglet.
     val RenderDependent
-         : Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X>
+         : Dependent<'TResult, 'U, 'W>
         -> 'W
         -> Doc
-        when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
     /// Get the view of a Piglet.
     val GetView
@@ -291,7 +289,7 @@ module Piglet =
     val Dependent
          : primary: Piglet<'TPrimary, 'U -> 'V>
         -> dependent: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
-        -> Piglet<'TResult, (Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
+        -> Piglet<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
         when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
     /// Create a Piglet that returns a collection of values,
@@ -314,11 +312,12 @@ module Piglet =
     type Builder =
         | Do
 
-        /// Create a dependent Piglet where the `output` part depends on an `input` Piglet.
+        /// Create a dependent Piglet where the `dependent` part depends on an `primary` Piglet.
         member Bind
              : input: Piglet<'TPrimary, 'U -> 'V>
              * output: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
-            -> Piglet<'TResult, (Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X> -> 'Y) -> 'Y>
+            -> Piglet<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
+            when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
         /// Create a Piglet that always returns the same successful value.
         member Return : 'T -> Piglet<'T, 'D -> 'D>

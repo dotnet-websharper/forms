@@ -130,36 +130,35 @@ module Utils =
 module Piglet =
 
     [<Sealed; JavaScript>]
-    type Dependent<'TPrimary, 'TResult, 'U, 'V, 'W, 'X when 'TPrimary : equality and 'V :> Doc and 'X :> Doc>
+    type Dependent<'TResult, 'U, 'W>
         (
-            chooser: Piglet<'TPrimary, 'U -> 'V>,
-            choice: 'TPrimary -> Piglet<'TResult, 'W -> 'X>
+            renderPrimary: 'U -> Doc,
+            pOut: View<Result<Piglet<'TResult, 'W -> Doc>>>
         ) =
 
-        let choice = memoize choice
-
-        let pOut =
-            chooser.view
-            |> View.Map (function
-                | Success i -> Success (choice i)
-                | Failure m -> Failure m)
-
         let out =
-            pOut |> View.Bind (function
+            pOut.Bind (function
                 | Success p -> p.view
                 | Failure m -> View.Const (Failure m))
         
         member this.View : View<Result<'TResult>> = out
 
         member this.RenderPrimary (f: 'U) : Doc =
-            chooser.render f :> Doc
+            renderPrimary f
 
         member this.RenderDependent (f: 'W) : Doc =
-            pOut
-            |> View.Map (function
-                | Success p -> p.render f :> Doc
+            pOut |> Doc.BindView (function
+                | Success p -> p.render f
                 | Failure _ -> Doc.Empty)
-            |> Doc.EmbedView
+
+    module Dependent =
+        let Make primary dependent =
+            let dependent = memoize (fun x ->
+                let p = dependent x
+                { view = p.view; id = p.id; render = fun x -> p.render x :> Doc })
+            let pOut = primary.view.Map (Result.Map dependent)
+            Dependent((fun x -> primary.render x :> Doc), pOut)
+
 
     [<JavaScript>]
     module Many =
@@ -301,10 +300,10 @@ module Piglet =
     let RenderManyAdder (c: Many.Collection<_,_,_,_,_>) f =
         c.RenderAdder f
 
-    let RenderPrimary (d: Dependent<_,_,_,_,_,_>) f =
+    let RenderPrimary (d: Dependent<_,_,_>) f =
         d.RenderPrimary f
 
-    let RenderDependent (d: Dependent<_,_,_,_,_,_>) f =
+    let RenderDependent (d: Dependent<_,_,_>) f =
         d.RenderDependent f
 
     let GetView (p: Piglet<_, _ -> _>) =
@@ -461,11 +460,11 @@ module Piglet =
         }
 
     let Dependent input output =
-        let c = Dependent(input, output)
+        let d = Dependent.Make input output
         {
             id = Fresh.Id()
-            view = c.View
-            render = fun f -> f c
+            view = d.View
+            render = fun f -> f d
         }
 
     type Builder =
