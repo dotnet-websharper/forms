@@ -5,6 +5,7 @@ open IntelliFactory.Build
 let bt =
     BuildTool().PackageId("WebSharper.UI.Next.Piglets")
         .VersionFrom("WebSharper", "alpha")
+        .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun fw -> fw.Net40)
 
 let main =
@@ -12,7 +13,7 @@ let main =
         .SourcesFromProject()
         .References(fun r ->
             [
-                r.NuGet("WebSharper.UI.Next").Reference()
+                r.NuGet("WebSharper.UI.Next").ForceFoundVersion().Reference()
             ])
 
 let test =
