@@ -3,6 +3,7 @@ namespace WebSharper.UI.Next.Piglets
 open System.Runtime.CompilerServices
 open WebSharper
 open WebSharper.UI.Next
+open WebSharper.UI.Next.Client
 
 [<Sealed>]
 type ErrorMessage =
@@ -349,6 +350,8 @@ module Validation =
     /// If the Piglet value matches the given regexp, it is passed on;
     /// else, `Failwith msg` is passed on.
     val IsMatch : regexp: string -> msg: string -> Piglet<string, 'R -> 'D> -> Piglet<string, 'R -> 'D>
+
+    val MapValidCheckedInput : msg: string -> Piglet<CheckedInput<'T>, 'R -> 'D> -> Piglet<'T, 'R -> 'D>
 
 [<AutoOpen>]
 module Pervasives =

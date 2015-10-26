@@ -498,6 +498,14 @@ module Validation =
     let IsMatch (re: string) msg p =
         Is (RegExp(re).Test) msg p
 
+    let MapValidCheckedInput msg p =
+        p |> Piglet.MapResult (fun res ->
+            match res with
+            | Success (CheckedInput.Valid (x, _)) -> Success x
+            | Success _ -> Failure [ErrorMessage.Create(p, msg)]
+            | Failure msgs -> Failure msgs
+        )
+
 [<JavaScript>]
 [<AutoOpen>]
 module Pervasives =
