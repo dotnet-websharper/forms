@@ -537,6 +537,18 @@ module Doc =
     let ButtonValidate caption attrs (submitter: Submitter<_>) =
         buttonAttr (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
 
+    let ShowErrors (v: View<Result<'T>>) (f: list<ErrorMessage> -> Doc) =
+        v.Doc(function
+            | Success _ -> Doc.Empty
+            | Failure msgs -> f msgs
+        )
+
+    let ShowSuccess (v: View<Result<'T>>) (f: 'T -> Doc) =
+        v.Doc(function
+            | Success x -> f x
+            | Failure msgs -> Doc.Empty
+        )
+
 [<Extension; Sealed; JavaScript>]
 type View =
 
@@ -555,3 +567,11 @@ type View =
             | Success _ -> x
             | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = p.id))
         )
+
+    [<Extension; Inline>]
+    static member ShowErrors (this: View<Result<'T>>, f: list<ErrorMessage> -> Doc) : Doc =
+        Doc.ShowErrors this f
+
+    [<Extension; Inline>]
+    static member ShowSuccess (this: View<Result<'T>>, f: 'T -> Doc) : Doc =
+        Doc.ShowSuccess this f

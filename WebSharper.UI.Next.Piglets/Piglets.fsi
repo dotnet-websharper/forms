@@ -385,6 +385,20 @@ module Doc =
         -> Submitter<Result<'T>>
         -> Elt
 
+    /// When the input View is a failure, show the given Doc;
+    /// otherwise, show an empty Doc.
+    val ShowErrors
+         : View<Result<'T>>
+        -> (list<ErrorMessage> -> Doc)
+        -> Doc
+
+    /// When the input View is a success, show the given Doc;
+    /// otherwise, show an empty Doc.
+    val ShowSuccess
+         : View<Result<'T>>
+        -> ('T -> Doc)
+        -> Doc
+
 module private Fresh =
 
     val Id : unit -> int
@@ -407,3 +421,19 @@ type View =
          : input: View<Result<'T>>
          * Piglet<'U, 'R>
         -> View<Result<'T>>
+
+    /// When the input View is a failure, show the given Doc;
+    /// otherwise, show an empty Doc.
+    [<Extension>]
+    static member ShowErrors
+         : View<Result<'T>>
+         * (list<ErrorMessage> -> Doc)
+        -> Doc
+
+    /// When the input View is a success, show the given Doc;
+    /// otherwise, show an empty Doc.
+    [<Extension>]
+    static member ShowSuccess
+         : View<Result<'T>>
+         * ('T -> Doc)
+        -> Doc
