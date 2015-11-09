@@ -14,8 +14,8 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Piglets.fsi" />
-    <Compile Include="Piglets.fs" />
+    <Compile Include="Forms.fsi" />
+    <Compile Include="Forms.fs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">

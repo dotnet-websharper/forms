@@ -27,7 +27,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <Import Project="..\build\net40\$(Name).proj" />
   <ItemGroup>
-    <Compile Include="ViewModel.fs" />
+    <Compile Include="Forms.fs" />
     <Compile Include="RenderUtils.fs" />
     <Compile Include="RenderWithTemplate.fs" />
     <Compile Include="RenderWithoutTemplate.fs" />

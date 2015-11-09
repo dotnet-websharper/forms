@@ -6,28 +6,28 @@ open WebSharper.UI.Next
 open WebSharper.Forms
 
 [<JavaScript>]
-module ViewModel =
+module Forms =
 
     type Contact = Email of string | PhoneNumber of string
 
     let AddItemForm() =
-        Piglet.Return (fun x y -> (x, y))
-        <*> (Piglet.Yield "John Doe"
+        Form.Return (fun x y -> (x, y))
+        <*> (Form.Yield "John Doe"
             |> Validation.IsNotEmpty "Please enter a name.")
-        <*> Piglet.Do {
-            let! isEmail = Piglet.Yield true
+        <*> Form.Do {
+            let! isEmail = Form.Yield true
             if isEmail then
-                return! Piglet.Yield "john@doe.com"
+                return! Form.Yield "john@doe.com"
                     |> Validation.IsMatch @"^.+@.+\..+$" "Please enter a valid email address."
-                    |> Piglet.Map Email
+                    |> Form.Map Email
             else
-                return! Piglet.Yield "01 234 5678"
+                return! Form.Yield "01 234 5678"
                     |> Validation.Is (fun s -> s.Length >= 6) "Please enter a valid phone number."
-                    |> Piglet.Map PhoneNumber
+                    |> Form.Map PhoneNumber
         }
-        |> Piglet.WithSubmit
+        |> Form.WithSubmit
 
     let FullForm() =
-        Piglet.ManyPiglet Seq.empty (AddItemForm()) Piglet.Yield
+        Form.ManyForm Seq.empty (AddItemForm()) Form.Yield
         |> Validation.Is (not << Seq.isEmpty) "Please enter at least one contact."
-        |> Piglet.WithSubmit
+        |> Form.WithSubmit

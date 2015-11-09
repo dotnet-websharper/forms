@@ -6,14 +6,14 @@ open WebSharper.UI.Next
 open WebSharper.UI.Next.Html
 open WebSharper.UI.Next.Client
 open WebSharper.Forms
-open WebSharper.Forms.Tests.ViewModel
+open WebSharper.Forms.Tests.Forms
 
 [<JavaScript>]
 module RenderWithoutTemplate =
 
     let Render() =
-        ViewModel.FullForm()
-        |> Piglet.Render (fun items submit ->
+        Forms.FullForm()
+        |> Form.Render (fun items submit ->
             div [
                 h1 [text "Contacts:"]
                 table [

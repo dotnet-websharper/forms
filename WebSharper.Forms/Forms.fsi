@@ -10,13 +10,13 @@ type ErrorMessage =
     member Id: int
     member Text: string
     static member Create : id: int * text: string -> ErrorMessage
-    static member Create : Piglet<'T, 'R> * text: string -> ErrorMessage
+    static member Create : Form<'T, 'R> * text: string -> ErrorMessage
 
 and Result<'T> =
     | Success of 'T
     | Failure of list<ErrorMessage>
 
-and [<Sealed>] Piglet<'T, 'R> =
+and [<Sealed>] Form<'T, 'R> =
     member Id : int
     member View : View<Result<'T>>
     member Render : 'R
@@ -59,13 +59,13 @@ type Result =
         -> Result<'T>
 
 
-/// Piglet constructors and combinators.
-module Piglet =
+/// Form constructors and combinators.
+module Form =
 
-    /// Operations related to Piglets of collections.
+    /// Operations related to Forms of collections.
     module Many =
 
-        /// Operations applicable to an item in a Piglet of collections.
+        /// Operations applicable to an item in a Form of collections.
         [<Class>]
         type ItemOperations =
 
@@ -78,24 +78,24 @@ module Piglet =
             /// Move the current item down one step in the collection.
             member MoveDown : Submitter<Result<bool>>
 
-        /// Operations applicable to a Piglet of collections.
+        /// Operations applicable to a Form of collections.
         [<Class>]
         type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> =
 
             /// A view on the resulting collection.
             member View : View<Result<seq<'T>>>
 
-            /// Render the item collection inside this Piglet
+            /// Render the item collection inside this Form
             /// with the provided rendering function.
             member Render : (ItemOperations -> 'V) -> Doc
 
             /// Stream where new items for the collection are written.
             member Add : 'T -> unit
 
-            /// Render the Piglet that inserts new items into the collection.
+            /// Render the Form that inserts new items into the collection.
             member RenderAdder : 'Y -> Doc
 
-        /// Operations applicable to a Piglet of collections
+        /// Operations applicable to a Form of collections
         /// with a provided default new value to insert.
         [<Class>]
         type CollectionWithDefault<'T, 'V, 'W when 'W :> Doc> =
@@ -105,29 +105,29 @@ module Piglet =
             [<Name "AddOne">]
             member Add : unit -> unit
 
-    /// Operations applicable to a dependent Piglet.
+    /// Operations applicable to a dependent Form.
     [<Sealed>]
     type Dependent<'TResult, 'U, 'W> =
         
-        /// A view on the result of the dependent Piglet.
+        /// A view on the result of the dependent Form.
         member View : View<Result<'TResult>>
 
-        /// Render the primary part of a dependent Piglet.
+        /// Render the primary part of a dependent Form.
         member RenderPrimary : 'U -> Doc
 
-        /// Render the dependent part of a dependent Piglet.
+        /// Render the dependent part of a dependent Form.
         member RenderDependent : 'W -> Doc
 
-    /// Create a Piglet from a view and a render builder.
+    /// Create a Form from a view and a render builder.
     val Create
          : view: View<Result<'T>>
         -> renderBuilder: ('R -> 'D)
-        -> Piglet<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Render a Piglet with a render function.
+    /// Render a Form with a render function.
     val Render
          : renderFunction: 'R
-        -> Piglet<'T, 'R -> #Doc>
+        -> Form<'T, 'R -> #Doc>
         -> Doc
 
     /// Render the items of a Collection with the provided rendering function.
@@ -137,57 +137,57 @@ module Piglet =
         -> Doc
         when 'W :> Doc and 'Z :> Doc
 
-    /// Render the Piglet that inserts new items into a Collection.
+    /// Render the Form that inserts new items into a Collection.
     val RenderManyAdder
             : Many.Collection<'T, 'V, 'W, 'Y, 'Z>
         -> 'Y
         -> Doc
         when 'W :> Doc and 'Z :> Doc
 
-    /// Render the primary part of a dependent Piglet.
+    /// Render the primary part of a dependent Form.
     val RenderPrimary
          : Dependent<'TResult, 'U, 'W>
         -> 'U
         -> Doc
 
-    /// Render the dependent part of a dependent Piglet.
+    /// Render the dependent part of a dependent Form.
     val RenderDependent
          : Dependent<'TResult, 'U, 'W>
         -> 'W
         -> Doc
 
-    /// Get the view of a Piglet.
+    /// Get the view of a Form.
     val GetView
-         : Piglet<'T, 'R -> 'D>
+         : Form<'T, 'R -> 'D>
         -> View<Result<'T>>
 
-    /// Create a Piglet that always returns the same successful value.
+    /// Create a Form that always returns the same successful value.
     val Return
          : value: 'T
-        -> Piglet<'T, 'D -> 'D>
+        -> Form<'T, 'D -> 'D>
 
-    /// Create a Piglet that always fails.
+    /// Create a Form that always fails.
     val ReturnFailure
          : unit
-        -> Piglet<'T, 'D -> 'D>
+        -> Form<'T, 'D -> 'D>
 
-    /// Create a Piglet that returns a reactive value,
+    /// Create a Form that returns a reactive value,
     /// initialized to a successful value `init`.
     val Yield
          : init: 'T
-        -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
-    /// Create a Piglet that returns a reactive value.
+    /// Create a Form that returns a reactive value.
     val YieldVar
          : Var<'T>
-        -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
-    /// Create a Piglet that returns a reactive value, initialized to failure.
+    /// Create a Form that returns a reactive value, initialized to failure.
     val YieldFailure
          : unit
-        -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
-    /// Create a Piglet that returns a reactive optional value,
+    /// Create a Form that returns a reactive optional value,
     /// initialized to a successful value `init`.
     ///
     /// When the associated Var is `noneValue`, the result value is `None`;
@@ -195,177 +195,177 @@ module Piglet =
     val YieldOption
          : init: option<'T>
         -> noneValue: 'T
-        -> Piglet<option<'T>, (Var<'T> -> 'D) -> 'D>
+        -> Form<option<'T>, (Var<'T> -> 'D) -> 'D>
         when 'T : equality
 
-    /// Apply a Piglet that returns a function to a Piglet that returns a value.
+    /// Apply a Form that returns a function to a Form that returns a value.
     val Apply
-         : Piglet<'T -> 'U, 'R -> 'R1>
-        -> Piglet<'T, 'R1 -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+         : Form<'T -> 'U, 'R -> 'R1>
+        -> Form<'T, 'R1 -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Add a submitter to a Piglet: the returned Piglet gets its value from
-    /// the input Piglet whenever the submitter is triggered.
+    /// Add a submitter to a Form: the returned Form gets its value from
+    /// the input Form whenever the submitter is triggered.
     val WithSubmit
-         : Piglet<'T, 'R -> Submitter<Result<'T>> -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+         : Form<'T, 'R -> Submitter<Result<'T>> -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Pass a view on the result of a Piglet to its render function.
+    /// Pass a view on the result of a Form to its render function.
     val TransmitView
-         : Piglet<'T, 'R -> View<Result<'T>> -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+         : Form<'T, 'R -> View<Result<'T>> -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Pass a mapped view on the result of a Piglet to its render function.
+    /// Pass a mapped view on the result of a Form to its render function.
     val TransmitViewMap
          : ('T -> 'U)
-        -> Piglet<'T, 'R -> View<Result<'U>> -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+        -> Form<'T, 'R -> View<Result<'U>> -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Pass a mapped view on the result of a Piglet to its render function.
+    /// Pass a mapped view on the result of a Form to its render function.
     val TransmitViewMapResult
          : (Result<'T> -> 'U)
-        -> Piglet<'T, 'R -> View<'U> -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+        -> Form<'T, 'R -> View<'U> -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Map the result of a Piglet.
+    /// Map the result of a Form.
     val Map
          : ('T -> 'U)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the result of a Piglet.
+    /// Map the result of a Form.
     val MapToResult
          : ('T -> Result<'U>)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the result of a Piglet.
+    /// Map the result of a Form.
     val MapResult
          : (Result<'T> -> Result<'U>)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the result of a Piglet asynchronously.
+    /// Map the result of a Form asynchronously.
     val MapAsync
          : ('T -> Async<'U>)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the result of a Piglet asynchronously.
+    /// Map the result of a Form asynchronously.
     val MapToAsyncResult
          : ('T -> Async<Result<'U>>)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the result of a Piglet asynchronously.
+    /// Map the result of a Form asynchronously.
     val MapAsyncResult
          : (Result<'T> -> Async<Result<'U>>)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'U, 'R -> 'D>
 
-    /// Map the arguments passed to the render function of a Piglet.
+    /// Map the arguments passed to the render function of a Form.
     val MapRenderArgs
          : 'R1
-         -> Piglet<'T, 'R1 -> 'R2>
-         -> Piglet<'T, ('R2 -> 'D) -> 'D>
+         -> Form<'T, 'R1 -> 'R2>
+         -> Form<'T, ('R2 -> 'D) -> 'D>
 
     /// Map any failing result to a failure with no error messages.
     val FlushErrors
-         : Piglet<'T, 'R -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+         : Form<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
 
     /// Run a function on all successful results.
     val Run
          : ('T -> unit)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
 
     /// Run a function on all results.
     val RunResult
          : (Result<'T> -> unit)
-        -> Piglet<'T, 'R -> 'D>
-        -> Piglet<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
+        -> Form<'T, 'R -> 'D>
 
-    /// Create a dependent Piglet where a `dependent` Piglet depends on the value of a `primary` Piglet.
+    /// Create a dependent Form where a `dependent` Form depends on the value of a `primary` Form.
     val Dependent
-         : primary: Piglet<'TPrimary, 'U -> 'V>
-        -> dependent: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
-        -> Piglet<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
+         : primary: Form<'TPrimary, 'U -> 'V>
+        -> dependent: ('TPrimary -> Form<'TResult, 'W -> 'X>)
+        -> Form<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
         when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
-    /// Create a Piglet that returns a collection of values,
-    /// with an additional piglet used to insert new values in the collection.
-    val ManyPiglet
+    /// Create a Form that returns a collection of values,
+    /// with an additional Form used to insert new values in the collection.
+    val ManyForm
          : init: seq<'T>
-        -> addPiglet: (Piglet<'T, 'Y -> 'Z>)
-        -> itemPiglet: ('T -> Piglet<'T, 'V -> 'W>)
-        -> Piglet<seq<'T>, (Many.Collection<'T, 'V, 'W, 'Y, 'Z> -> 'x) -> 'x>
+        -> addForm: (Form<'T, 'Y -> 'Z>)
+        -> itemForm: ('T -> Form<'T, 'V -> 'W>)
+        -> Form<seq<'T>, (Many.Collection<'T, 'V, 'W, 'Y, 'Z> -> 'x) -> 'x>
         when 'W :> Doc and 'Z :> Doc
 
-    /// Create a Piglet that returns a collection of values, each created according to the given Piglet.
+    /// Create a Form that returns a collection of values, each created according to the given Form.
     val Many
          : init: seq<'T>
         -> addValue: 'T
-        -> itemPiglet: ('T -> Piglet<'T, 'V -> 'W>)
-        -> Piglet<seq<'T>, (Many.CollectionWithDefault<'T, 'V, 'W> -> 'x) -> 'x>
+        -> itemForm: ('T -> Form<'T, 'V -> 'W>)
+        -> Form<seq<'T>, (Many.CollectionWithDefault<'T, 'V, 'W> -> 'x) -> 'x>
         when 'W :> Doc and 'Z :> Doc
 
     type Builder =
         | Do
 
-        /// Create a dependent Piglet where the `dependent` part depends on an `primary` Piglet.
+        /// Create a dependent Form where the `dependent` part depends on an `primary` Form.
         member Bind
-             : input: Piglet<'TPrimary, 'U -> 'V>
-             * output: ('TPrimary -> Piglet<'TResult, 'W -> 'X>)
-            -> Piglet<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
+             : input: Form<'TPrimary, 'U -> 'V>
+             * output: ('TPrimary -> Form<'TResult, 'W -> 'X>)
+            -> Form<'TResult, (Dependent<'TResult, 'U, 'W> -> 'Y) -> 'Y>
             when 'TPrimary : equality and 'V :> Doc and 'X :> Doc
 
-        /// Create a Piglet that always returns the same successful value.
-        member Return : 'T -> Piglet<'T, 'D -> 'D>
+        /// Create a Form that always returns the same successful value.
+        member Return : 'T -> Form<'T, 'D -> 'D>
 
-        /// Return the given Piglet.
-        member ReturnFrom : Piglet<'T, 'R -> 'D> -> Piglet<'T, 'R -> 'D>
+        /// Return the given Form.
+        member ReturnFrom : Form<'T, 'R -> 'D> -> Form<'T, 'R -> 'D>
 
-        /// Create a Piglet that returns a reactive value,
+        /// Create a Form that returns a reactive value,
         /// initialized to a successful value `init`.
-        member Yield : init: 'T -> Piglet<'T, (Var<'T> -> 'D) -> 'D>
+        member Yield : init: 'T -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
-        /// Return the given Piglet.
-        member YieldFrom : Piglet<'T, 'R -> 'D> -> Piglet<'T, 'R -> 'D>
+        /// Return the given Form.
+        member YieldFrom : Form<'T, 'R -> 'D> -> Form<'T, 'R -> 'D>
 
-        /// Create a Piglet that always fails.
-        member Zero : unit -> Piglet<'T, 'D -> 'D>
+        /// Create a Form that always fails.
+        member Zero : unit -> Form<'T, 'D -> 'D>
 
-/// Functions to validate the value of a Piglet.
+/// Functions to validate the value of a Form.
 module Validation =
 
-    /// If the Piglet value passes the predicate, it is passed on;
+    /// If the Form value passes the predicate, it is passed on;
     /// else, `Failwith msg` is passed on.
-    val Is : pred: ('T -> bool) -> msg: string -> Piglet<'T, 'R -> 'D> -> Piglet<'T, 'R -> 'D>
+    val Is : pred: ('T -> bool) -> msg: string -> Form<'T, 'R -> 'D> -> Form<'T, 'R -> 'D>
 
-    /// If the Piglet value is not an empty string, it is passed on;
+    /// If the Form value is not an empty string, it is passed on;
     /// else, `Failwith msg` is passed on.
-    val IsNotEmpty : msg: string -> Piglet<string, 'R -> 'D> -> Piglet<string, 'R -> 'D>
+    val IsNotEmpty : msg: string -> Form<string, 'R -> 'D> -> Form<string, 'R -> 'D>
 
-    /// If the Piglet value matches the given regexp, it is passed on;
+    /// If the Form value matches the given regexp, it is passed on;
     /// else, `Failwith msg` is passed on.
-    val IsMatch : regexp: string -> msg: string -> Piglet<string, 'R -> 'D> -> Piglet<string, 'R -> 'D>
+    val IsMatch : regexp: string -> msg: string -> Form<string, 'R -> 'D> -> Form<string, 'R -> 'D>
 
-    val MapValidCheckedInput : msg: string -> Piglet<CheckedInput<'T>, 'R -> 'D> -> Piglet<'T, 'R -> 'D>
+    val MapValidCheckedInput : msg: string -> Form<CheckedInput<'T>, 'R -> 'D> -> Form<'T, 'R -> 'D>
 
 [<AutoOpen>]
 module Pervasives =
 
-    /// Apply a Piglet that returns a function to a Piglet that returns a value.
+    /// Apply a Form that returns a function to a Form that returns a value.
     val (<*>)
-         : pf: Piglet<'T -> 'U, 'R -> 'R1>
-        -> px: Piglet<'T, 'R1 -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+         : pf: Form<'T -> 'U, 'R -> 'R1>
+        -> px: Form<'T, 'R1 -> 'D>
+        -> Form<'U, 'R -> 'D>
 
     val (<*?>)
-         : pf: Piglet<'T -> 'U, 'R -> 'R1>
-        -> px: Piglet<Result<'T>, 'R1 -> 'D>
-        -> Piglet<'U, 'R -> 'D>
+         : pf: Form<'T -> 'U, 'R -> 'R1>
+        -> px: Form<Result<'T>, 'R1 -> 'D>
+        -> Form<'U, 'R -> 'D>
 
 module Attr =
 
@@ -415,11 +415,11 @@ type View =
         -> View<Result<'T>>
 
     /// When the input View is a failure, restrict its error messages
-    /// to those that come directly from the given Piglet.
+    /// to those that come directly from the given Form.
     [<Extension>]
     static member Through
          : input: View<Result<'T>>
-         * Piglet<'U, 'R>
+         * Form<'U, 'R>
         -> View<Result<'T>>
 
     /// When the input View is a failure, show the given Doc;

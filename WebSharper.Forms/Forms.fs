@@ -91,7 +91,7 @@ type Result =
         Failure [ErrorMessage(id, errorMessage)]
 
 [<JavaScript>]
-type Piglet<'T, 'R> =
+type Form<'T, 'R> =
     {
         id : int
         view : View<Result<'T>>
@@ -109,7 +109,7 @@ type ErrorMessage with
         new ErrorMessage(id, text)
 
     [<JavaScript>]
-    static member Create (p: Piglet<_, _>, text) =
+    static member Create (p: Form<_, _>, text) =
         new ErrorMessage(p.id, text)
 
 [<JavaScript; AutoOpen>]
@@ -127,13 +127,13 @@ module Utils =
 
 
 [<JavaScript>]
-module Piglet =
+module Form =
 
     [<Sealed; JavaScript>]
     type Dependent<'TResult, 'U, 'W>
         (
             renderPrimary: 'U -> Doc,
-            pOut: View<Result<Piglet<'TResult, 'W -> Doc>>>
+            pOut: View<Result<Form<'TResult, 'W -> Doc>>>
         ) =
 
         let out =
@@ -182,7 +182,7 @@ module Piglet =
                     incr x
                     !x
 
-        type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Piglet<'T, 'V -> 'W>, inits: seq<'T>, adder : Piglet<'T, 'Y -> 'Z>) =
+        type Collection<'T, 'V, 'W, 'Y, 'Z when 'W :> Doc and 'Z :> Doc> (p : 'T -> Form<'T, 'V -> 'W>, inits: seq<'T>, adder : Form<'T, 'Y -> 'Z>) =
             let arr = ResizeArray()
             let var = Var.Create arr
             let mk (x: 'T) =
@@ -306,7 +306,7 @@ module Piglet =
     let RenderDependent (d: Dependent<_,_,_>) f =
         d.RenderDependent f
 
-    let GetView (p: Piglet<_, _ -> _>) =
+    let GetView (p: Form<_, _ -> _>) =
         p.view
 
     let Return value =
@@ -390,7 +390,7 @@ module Piglet =
     let TransmitViewMap f p =
         TransmitViewMapResult (Result.Map f) p
 
-    let MapResult f p : Piglet<_, _ -> _> =
+    let MapResult f p : Form<_, _ -> _> =
         {
             id = p.id
             view = View.Map f p.view
@@ -403,7 +403,7 @@ module Piglet =
     let Map f p =
         MapResult (Result.Map f) p
 
-    let MapAsyncResult f p : Piglet<_, _ -> _> =
+    let MapAsyncResult f p : Form<_, _ -> _> =
         {
             id = p.id
             view = View.MapAsync f p.view
@@ -441,7 +441,7 @@ module Piglet =
         MapResult (fun x -> f x; x) p
 
     [<JavaScript>]
-    let ManyPiglet inits create p =
+    let ManyForm inits create p =
         let m = Many.Collection(p, inits, create)
         {
             id = Fresh.Id()
@@ -474,11 +474,11 @@ module Piglet =
 
         member this.Return x = Return x
 
-        member this.ReturnFrom (p: Piglet<_, _ -> _>) = p
+        member this.ReturnFrom (p: Form<_, _ -> _>) = p
 
         member this.Yield x = Yield x
 
-        member this.YieldFrom (p: Piglet<_, _ -> _>) = p
+        member this.YieldFrom (p: Form<_, _ -> _>) = p
 
         member this.Zero() = ReturnFailure()
 
@@ -486,7 +486,7 @@ module Piglet =
 module Validation =
 
     let Is pred msg p =
-        p |> Piglet.MapResult (fun res ->
+        p |> Form.MapResult (fun res ->
             match res with
             | Success x -> if pred x then res else Failure [ErrorMessage(p.id, msg)]
             | Failure _ -> res
@@ -499,7 +499,7 @@ module Validation =
         Is (RegExp(re).Test) msg p
 
     let MapValidCheckedInput msg p =
-        p |> Piglet.MapResult (fun res ->
+        p |> Form.MapResult (fun res ->
             match res with
             | Success (CheckedInput.Valid (x, _)) -> Success x
             | Success _ -> Failure [ErrorMessage.Create(p, msg)]
@@ -511,10 +511,10 @@ module Validation =
 module Pervasives =
 
     let (<*>) pf px =
-        Piglet.Apply pf px
+        Form.Apply pf px
 
     let (<*?>) pf px =
-        Piglet.ApJoin pf px
+        Form.ApJoin pf px
 
 [<JavaScript>]
 module Attr =
@@ -561,7 +561,7 @@ type View =
         )
 
     [<Extension>]
-    static member Through (this: View<Result<'T>>, p: Piglet<'U, 'R>) : View<Result<'T>> =
+    static member Through (this: View<Result<'T>>, p: Form<'U, 'R>) : View<Result<'T>> =
         this |> View.Map (fun x ->
             match x with
             | Success _ -> x
