@@ -1,4 +1,4 @@
-namespace WebSharper.UI.Next.Piglets
+namespace WebSharper.Forms
 
 open System.Runtime.CompilerServices
 open WebSharper
@@ -259,7 +259,7 @@ module Piglet =
 
             member this.Render (f: ItemOperations -> 'V) : Doc =
                 changesView
-                |> Doc.ConvertBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
+                |> Doc.BindSeqCachedBy (fun (_, _, ident) -> ident) (fun (p, ops, _) ->
                     p.render (f ops) :> Doc
                 )
 

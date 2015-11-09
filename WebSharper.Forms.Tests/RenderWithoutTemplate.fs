@@ -1,12 +1,12 @@
-﻿namespace WebSharper.Piglets.Next.Tests
+﻿namespace WebSharper.Forms.Tests
 
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI.Next
 open WebSharper.UI.Next.Html
 open WebSharper.UI.Next.Client
-open WebSharper.UI.Next.Piglets
-open WebSharper.Piglets.Next.Tests.ViewModel
+open WebSharper.Forms
+open WebSharper.Forms.Tests.ViewModel
 
 [<JavaScript>]
 module RenderWithoutTemplate =

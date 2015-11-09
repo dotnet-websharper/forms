@@ -1,4 +1,4 @@
-# WebSharper.UI.Next.Piglets
+# WebSharper.Forms
 
 Provides a framework to build reactive interfaces in WebSharper,
 similar to Formlets but with more control over the structure of the output.
@@ -16,8 +16,8 @@ similar to Formlets but with more control over the structure of the output.
 [contact]: http://websharper.com/contact
 [fpish]: http://fpish.net
 [fsharp]: http://fsharp.org
-[gh]: http://github.com/intellifactory/websharper.ui.next.piglets
-[intro]: http://github.com/intellifactory/websharper.ui.next.piglets/blob/master/docs/Introduction.md
-[issues]: http://github.com/intellifactory/websharper.ui.next.piglets/issues
-[license]: http://github.com/intellifactory/websharper.ui.next.piglets/blob/master/LICENSE.md
+[gh]: http://github.com/intellifactory/websharper.forms
+[intro]: http://github.com/intellifactory/websharper.forms/blob/master/docs/Introduction.md
+[issues]: http://github.com/intellifactory/websharper.forms/issues
+[license]: http://github.com/intellifactory/websharper.forms/blob/master/LICENSE.md
 [nuget]: http://nuget.org

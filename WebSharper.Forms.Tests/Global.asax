@@ -1,1 +1,1 @@
-<%@ Application Inherits="WebSharper.UI.Next.Piglets.Tests.Global" %>
+<%@ Application Inherits="WebSharper.Forms.Tests.Global" %>

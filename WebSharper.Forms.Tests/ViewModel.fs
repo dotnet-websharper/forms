@@ -1,9 +1,9 @@
-﻿namespace WebSharper.Piglets.Next.Tests
+﻿namespace WebSharper.Forms.Tests
 
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI.Next
-open WebSharper.UI.Next.Piglets
+open WebSharper.Forms
 
 [<JavaScript>]
 module ViewModel =

@@ -1,4 +1,4 @@
-namespace WebSharper.UI.Next.Piglets
+namespace WebSharper.Forms
 
 open System.Runtime.CompilerServices
 open WebSharper

@@ -3,13 +3,13 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.UI.Next.Piglets")
+    BuildTool().PackageId("WebSharper.Forms")
         .VersionFrom("WebSharper", "alpha")
         .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun fw -> fw.Net40)
 
 let main =
-    bt.WebSharper.Library("WebSharper.UI.Next.Piglets")
+    bt.WebSharper.Library("WebSharper.Forms")
         .SourcesFromProject()
         .References(fun r ->
             [
@@ -17,7 +17,7 @@ let main =
             ])
 
 let test =
-    bt.WebSharper.BundleWebsite("WebSharper.UI.Next.Piglets.Tests")
+    bt.WebSharper.BundleWebsite("WebSharper.Forms.Tests")
         .SourcesFromProject()
         .References(fun r ->
             [
@@ -31,15 +31,15 @@ bt.Solution [
     test
 
     bt.NuGet.CreatePackage()
-        .Description("Provides a framework to build reactive interfaces in WebSharper,
-            similar to Formlets but with more control over the structure of the output.")
-        .ProjectUrl("http://github.com/intellifactory/websharper.ui.next.piglets")
+        .Description("Provides a framework to build reactive interfaces in WebSharper,\
+                      similar to Formlets but with more control over the structure of the output.")
+        .ProjectUrl("http://github.com/intellifactory/websharper.forms")
         .Configure(fun c ->
             {
                 c with
                     Authors = ["IntelliFactory"]
-                    Title = Some "WebSharper.UI.Next.Piglets"
-                    LicenseUrl = Some "http://github.com/intellifactory/websharper.ui.next.piglets/blob/master/LICENSE.md"
+                    Title = Some "WebSharper.Forms"
+                    LicenseUrl = Some "http://github.com/intellifactory/websharper.forms/blob/master/LICENSE.md"
                     RequiresLicenseAcceptance = true
             })
         .Add(main)

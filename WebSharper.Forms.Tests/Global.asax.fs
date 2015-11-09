@@ -1,4 +1,4 @@
-namespace WebSharper.UI.Next.Piglets.Tests
+namespace WebSharper.Forms.Tests
 
 type Global() =
     inherit System.Web.HttpApplication()

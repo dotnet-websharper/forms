@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>{87297620-c340-470f-a347-21dfa030c502}</ProjectGuid>
     <ProjectTypeGuids>{349C5851-65DF-11DA-9384-00065B846F21};{F2A71F9B-5D33-465A-A702-920D77279786}</ProjectTypeGuids>
-    <Name>WebSharper.UI.Next.Piglets.Tests</Name>
+    <Name>WebSharper.Forms.Tests</Name>
     <OutputType>Library</OutputType>
     <OutputPath>bin</OutputPath>
     <WebSharperProject>Bundle</WebSharperProject>
