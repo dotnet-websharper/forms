@@ -14,6 +14,9 @@ module RenderWithTemplate =
     let [<Literal>] TemplatePath = __SOURCE_DIRECTORY__ + "/index.html"
     type Template = Templating.Template<TemplatePath>
 
+#if ZAFIR
+    [<ReflectedDefinition>]
+#endif
     let Render() =
         Forms.FullForm()
         |> Form.Render (fun items submit ->

@@ -10,6 +10,11 @@ open WebSharper.Forms
 [<JavaScript>]
 module Main =
 
+#if ZAFIR
+    [<SPAEntryPoint>]
+    let Main() =
+#else
     let Main =
+#endif
         Console.Log("Running JavaScript Entry Point..")
         RenderWithTemplate.Render() |> Doc.RunById "main"

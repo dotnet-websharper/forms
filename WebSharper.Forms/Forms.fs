@@ -25,6 +25,7 @@ module Fresh =
         decr lastId
         !lastId
 
+[<JavaScript>]
 type Result<'T> =
     | Success of 'T
     | Failure of list<ErrorMessage>
