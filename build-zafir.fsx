@@ -21,7 +21,7 @@ let test =
         .SourcesFromProject()
         .References(fun r ->
             [
-                r.NuGet("Zafir.UI.Next").Reference()
+                r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
                 r.Project(main)
             ])
 
