@@ -13,7 +13,7 @@ let main =
         .SourcesFromProject()
         .References(fun r ->
             [
-                r.NuGet("Zafir.UI.Next").ForceFoundVersion().Reference()
+                r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
             ])
 
 let test =
