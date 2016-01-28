@@ -335,7 +335,7 @@ module Form =
         YieldVar (Var.Create value)
 
     let YieldFailure () =
-        let var = Var.Create Unchecked.defaultof<_>
+        let var = Var.Create JS.Undefined<_>
         let view = var.View
         {
             id = Var.GetId var
