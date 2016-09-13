@@ -11,6 +11,7 @@ let bt =
 let main =
     bt.Zafir.Library("WebSharper.Forms")
         .SourcesFromProject()
+        .WithSourceMap()
         .References(fun r ->
             [
                 r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
@@ -19,6 +20,7 @@ let main =
 let test =
     bt.Zafir.BundleWebsite("WebSharper.Forms.Tests")
         .SourcesFromProject()
+        .WithSourceMap()
         .References(fun r ->
             [
                 r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
