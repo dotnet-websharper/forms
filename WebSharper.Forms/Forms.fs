@@ -230,7 +230,7 @@ module Form =
                 var.View
                 |> View.Bind (fun arr ->
                     arr.ToArray()
-                    |> Array.MapReduce
+                    |> Array.MapTreeReduce
                         (fun (p, _, _ as x) -> p.view |> View.Map (fun _ -> Seq.singleton x))
                         (View.Const Seq.empty)
                         (View.Map2 Seq.append)
@@ -250,7 +250,7 @@ module Form =
                 var.View
                 |> View.Bind (fun s ->
                     s.ToArray()
-                    |> Array.MapReduce
+                    |> Array.MapTreeReduce
                         (fun (p, _, _) -> p.view |> View.Map (Result.Map Seq.singleton))
                         (View.Const (Success Seq.empty))
                         (View.Map2 (Result.Append Seq.append))
