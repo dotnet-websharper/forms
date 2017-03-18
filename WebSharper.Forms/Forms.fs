@@ -99,8 +99,11 @@ type Form<'T, 'R> =
         render : 'R
     }
 
+    [<Inline>]
     member this.Id = this.id
+    [<Inline>]
     member this.View = this.view
+    [<Inline>]
     member this.Render = this.render
 
 type ErrorMessage with
@@ -142,8 +145,10 @@ module Form =
                 | Success p -> p.view
                 | Failure m -> View.Const (Failure m))
         
+        [<Inline>]
         member this.View : View<Result<'TResult>> = out
 
+        [<Inline>]
         member this.RenderPrimary (f: 'U) : Doc =
             renderPrimary f
 
@@ -165,8 +170,11 @@ module Form =
     module Many =
 
         type ItemOperations(delete: unit -> unit, moveUp: Submitter<Result<bool>>, moveDown: Submitter<Result<bool>>) =
+            [<Inline>]
             member this.Delete() = delete()
+            [<Inline>]
             member this.MoveUp = moveUp
+            [<Inline>]
             member this.MoveDown = moveDown
 
         type System.Collections.Generic.List<'T> with
@@ -256,6 +264,7 @@ module Form =
                         (View.Map2 (Result.Append Seq.append))
                 )
 
+            [<Inline>]
             member this.View = out
 
             member this.Render (f: ItemOperations -> 'V) : Doc =
@@ -264,6 +273,7 @@ module Form =
                     p.render (f ops) :> Doc
                 )
 
+            [<Inline>]
             member this.Add (x: 'T) =
                 add x
 
@@ -295,18 +305,23 @@ module Form =
             |> Doc.EmbedView
         )
 
+    [<Inline>]
     let RenderMany (c: Many.Collection<_,_,_,_,_>) f =
         c.Render f
 
+    [<Inline>]
     let RenderManyAdder (c: Many.Collection<_,_,_,_,_>) f =
         c.RenderAdder f
 
+    [<Inline>]
     let RenderPrimary (d: Dependent<_,_,_>) f =
         d.RenderPrimary f
 
+    [<Inline>]
     let RenderDependent (d: Dependent<_,_,_>) f =
         d.RenderDependent f
 
+    [<Inline>]
     let GetView (p: Form<_, _ -> _>) =
         p.view
 
@@ -471,16 +486,22 @@ module Form =
     type Builder =
         | Do
 
+        [<Inline>]
         member this.Bind(p, f) = Dependent p f
 
+        [<Inline>]
         member this.Return x = Return x
 
+        [<Inline>]
         member this.ReturnFrom (p: Form<_, _ -> _>) = p
 
+        [<Inline>]
         member this.Yield x = Yield x
 
+        [<Inline>]
         member this.YieldFrom (p: Form<_, _ -> _>) = p
 
+        [<Inline>]
         member this.Zero() = ReturnFailure()
 
 [<JavaScript>]
