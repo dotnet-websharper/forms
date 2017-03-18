@@ -8,7 +8,7 @@ open WebSharper.UI.Next.Client
 open WebSharper.UI.Next.Notation
 
 [<JavaScript; Sealed>]
-type ErrorMessage (id: int, message: string) =
+type ErrorMessage (id: string, message: string) =
 
     [<Inline>]
     member this.Id = id
@@ -19,11 +19,11 @@ type ErrorMessage (id: int, message: string) =
 [<JavaScript>]
 module Fresh =
 
-    let lastId = ref -1
+    let lastId = ref 0
 
     let Id() =
-        decr lastId
-        !lastId
+        incr lastId
+        "Form" + string !lastId
 
 [<JavaScript>]
 type Result<'T> =
@@ -94,7 +94,7 @@ type Result =
 [<JavaScript>]
 type Form<'T, 'R> =
     {
-        id : int
+        id : string
         view : View<Result<'T>>
         render : 'R
     }
@@ -109,7 +109,7 @@ type Form<'T, 'R> =
 type ErrorMessage with
 
     [<JavaScript>]
-    static member Create (id: int, text) =
+    static member Create (id: string, text) =
         new ErrorMessage(id, text)
 
     [<JavaScript>]
@@ -339,9 +339,9 @@ module Form =
             render = id
         }
 
-    let YieldVar var =
+    let YieldVar (var: IRef<_>) =
         {
-            id = Var.GetId var
+            id = var.Id
             view = var.View |> View.Map Success
             render = fun r -> r var
         }
@@ -350,18 +350,18 @@ module Form =
         YieldVar (Var.Create value)
 
     let YieldFailure () =
-        let var = Var.Create JS.Undefined<_>
+        let var = Var.Create JS.Undefined<_> :> IRef<_>
         let view = var.View
         {
-            id = Var.GetId var
+            id = var.Id
             view = View.SnapshotOn (Failure []) view (view |> View.Map Success)
             render = fun r -> r var
         }
 
     let YieldOption init noneValue =
-        let var = Var.Create (defaultArg init noneValue)
+        let var = Var.Create (defaultArg init noneValue) :> IRef<_>
         {
-            id = Var.GetId var
+            id = var.Id
             view = var.View |> View.Map (fun x ->
                 Success (if x = noneValue then None else Some x))
             render = fun r -> r var
@@ -575,11 +575,11 @@ module Doc =
 type View =
 
     [<Extension>]
-    static member Through (this: View<Result<'T>>, v: Var<'U>) : View<Result<'T>> =
+    static member Through (this: View<Result<'T>>, v: IRef<'U>) : View<Result<'T>> =
         this |> View.Map (fun x ->
             match x with
             | Success _ -> x
-            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = Var.GetId v))
+            | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = v.Id))
         )
 
     [<Extension>]

@@ -7,9 +7,9 @@ open WebSharper.UI.Next.Client
 
 [<Sealed>]
 type ErrorMessage =
-    member Id: int
+    member Id: string
     member Text: string
-    static member Create : id: int * text: string -> ErrorMessage
+    static member Create : id: string * text: string -> ErrorMessage
     static member Create : Form<'T, 'R> * text: string -> ErrorMessage
 
 and Result<'T> =
@@ -17,7 +17,7 @@ and Result<'T> =
     | Failure of list<ErrorMessage>
 
 and [<Sealed>] Form<'T, 'R> =
-    member Id : int
+    member Id : string
     member View : View<Result<'T>>
     member Render : 'R
 
@@ -55,7 +55,7 @@ type Result =
     /// Create a failing result with a single error message.
     static member FailWith
          : errorMessage: string
-         * ?id: int
+         * ?id: string
         -> Result<'T>
 
 
@@ -175,27 +175,27 @@ module Form =
     /// initialized to a successful value `init`.
     val Yield
          : init: 'T
-        -> Form<'T, (Var<'T> -> 'D) -> 'D>
+        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive value.
     val YieldVar
-         : Var<'T>
-        -> Form<'T, (Var<'T> -> 'D) -> 'D>
+         : IRef<'T>
+        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive value, initialized to failure.
     val YieldFailure
          : unit
-        -> Form<'T, (Var<'T> -> 'D) -> 'D>
+        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive optional value,
     /// initialized to a successful value `init`.
     ///
-    /// When the associated Var is `noneValue`, the result value is `None`;
+    /// When the associated IRef is `noneValue`, the result value is `None`;
     /// when it is any other value `x`, the result value is `Some x`.
     val YieldOption
          : init: option<'T>
         -> noneValue: 'T
-        -> Form<option<'T>, (Var<'T> -> 'D) -> 'D>
+        -> Form<option<'T>, (IRef<'T> -> 'D) -> 'D>
         when 'T : equality
 
     /// Apply a Form that returns a function to a Form that returns a value.
@@ -328,7 +328,7 @@ module Form =
 
         /// Create a Form that returns a reactive value,
         /// initialized to a successful value `init`.
-        member Yield : init: 'T -> Form<'T, (Var<'T> -> 'D) -> 'D>
+        member Yield : init: 'T -> Form<'T, (IRef<'T> -> 'D) -> 'D>
 
         /// Return the given Form.
         member YieldFrom : Form<'T, 'R -> 'D> -> Form<'T, 'R -> 'D>
@@ -401,17 +401,17 @@ module Doc =
 
 module private Fresh =
 
-    val Id : unit -> int
+    val Id : unit -> string
 
 [<Extension; Sealed>]
 type View =
 
     /// When the input View is a failure, restrict its error messages
-    /// to those that come directly from the given Var.
+    /// to those that come directly from the given IRef.
     [<Extension>]
     static member Through
          : input: View<Result<'T>>
-         * Var<'U>
+         * IRef<'U>
         -> View<Result<'T>>
 
     /// When the input View is a failure, restrict its error messages
