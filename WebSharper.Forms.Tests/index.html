@@ -15,7 +15,7 @@
 <body>
     <div id="main"></div>
     <script type="text/javascript" src="Content/WebSharper.Forms.Tests.js"></script>
-    <div ws-children-template="Form" style="display:none">
+    <div data-children-template="Form" style="display:none">
         <h1>Contacts:</h1>
         <table>
             <thead>
@@ -24,43 +24,43 @@
                     <th>Contact</th>
                 </tr>
             </thead>
-            <tbody ws-hole="Items" ws-children-template="Item">
+            <tbody data-hole="Items" data-children-template="Item">
                 <tr>
-                    <td>${Name}</td>
-                    <td>${Contact}</td>
-                    <td><button ws-attr="MoveUp">Move up</button></td>
-                    <td><button ws-attr="MoveDown">Move down</button></td>
-                    <td><button ws-attr="Delete">Delete</button></td>
+                    <td>$!{Name}</td>
+                    <td>$!{Contact}</td>
+                    <td><button data-attr="MoveUp">Move up</button></td>
+                    <td><button data-attr="MoveDown">Move down</button></td>
+                    <td><button data-attr="Delete">Delete</button></td>
                 </tr>
             </tbody>
         </table>
         <div style="border: solid 1px #888; padding: 10px; margin: 20px; width: 200px">
             <h3>Add a new contact</h3>
-            <div ws-replace="Adder" ws-children-template="Adder">
+            <div data-replace="Adder" data-children-template="Adder">
                 <p>
-                    <input ws-var="Name" />
-                    <span ws-hole="NameErrors" class="error"></span>
+                    <input data-var="Name" />
+                    <span data-hole="NameErrors" class="error"></span>
                 </p>
                 <p>
-                    <div ws-replace="ContactType"></div>
-                    <div ws-hole="Contact" ws-children-template="Contact">
-                        <input ws-var="ContactText" />
-                        <span ws-hole="ContactErrors" class="error"></span>
+                    <div data-replace="ContactType"></div>
+                    <div data-hole="Contact" data-children-template="Contact">
+                        <input data-var="ContactText" />
+                        <span data-hole="ContactErrors" class="error"></span>
                     </div>
                 </p>
                 <p>
-                    <button ws-onclick="Add">Add</button>
+                    <button data-event-click="Add">Add</button>
                 </p>
             </div>
         </div>
         <div>
-            <button ws-onclick="Submit">Submit</button>
+            <button data-event-click="Submit">Submit</button>
         </div>
-        <div ws-hole="SubmitResults">
-            <p ws-template="SubmitSuccess">
+        <div data-hole="SubmitResults">
+            <p data-template="SubmitSuccess">
                 You registered a contact: ${Name} (${Contact})
             </p>
-            <p ws-template="SubmitError" class="error">
+            <p data-template="SubmitError" class="error">
                 ${Message}
             </p>
         </div>
