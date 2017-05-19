@@ -3,25 +3,27 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("WebSharper.Forms")
-        .VersionFrom("WebSharper", "alpha")
+    BuildTool().PackageId("Zafir.Forms")
+        .VersionFrom("Zafir")
         .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun fw -> fw.Net40)
 
 let main =
-    bt.WebSharper.Library("WebSharper.Forms")
+    bt.Zafir.Library("WebSharper.Forms")
         .SourcesFromProject()
+        .WithSourceMap()
         .References(fun r ->
             [
-                r.NuGet("WebSharper.UI.Next").ForceFoundVersion().Reference()
+                r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
             ])
 
 let test =
-    bt.WebSharper.BundleWebsite("WebSharper.Forms.Tests")
+    bt.Zafir.BundleWebsite("WebSharper.Forms.Tests")
         .SourcesFromProject()
+        .WithSourceMap()
         .References(fun r ->
             [
-                r.NuGet("WebSharper.UI.Next").Reference()
+                r.NuGet("Zafir.UI.Next").Latest(true).ForceFoundVersion().Reference()
                 r.Project(main)
             ])
 
@@ -38,7 +40,7 @@ bt.Solution [
             {
                 c with
                     Authors = ["IntelliFactory"]
-                    Title = Some "WebSharper.Forms"
+                    Title = Some "Zafir.Forms"
                     LicenseUrl = Some "http://github.com/intellifactory/websharper.forms/blob/master/LICENSE.md"
                     RequiresLicenseAcceptance = true
             })
