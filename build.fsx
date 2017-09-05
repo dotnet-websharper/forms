@@ -13,7 +13,7 @@ let main =
         .SourcesFromProject()
         .References(fun r ->
             [
-                r.NuGet("WebSharper.UI.Next").Version("(,4.0)").ForceFoundVersion().Reference()
+                r.NuGet("WebSharper.UI.Next").Version("(,4.0)").Version("(,4.0)").ForceFoundVersion().Reference()
             ])
 
 let test =
@@ -21,7 +21,7 @@ let test =
         .SourcesFromProject()
         .References(fun r ->
             [
-                r.NuGet("WebSharper.UI.Next").Version("(,4.0)").Reference()
+                r.NuGet("WebSharper.UI.Next").Version("(,4.0)").Version("(,4.0)").Reference()
                 r.Project(main)
             ])
 
