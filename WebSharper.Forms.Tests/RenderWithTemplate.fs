@@ -55,11 +55,11 @@ module RenderWithTemplate =
                                         .Doc()
                                 )
                             )
-                            .Add(submit.Trigger)
+                            .Add(fun _ -> submit.Trigger())
                             .Doc()
                     )
                 )
-                .Submit(fun _ _ -> submit.Trigger())
+                .Submit(fun _ -> submit.Trigger())
                 .SubmitResults([
                     submit.View |> View.Map (function
                         | Success xs ->
