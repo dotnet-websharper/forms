@@ -2,11 +2,13 @@
 
 open WebSharper
 open WebSharper.JavaScript
-open WebSharper.UI.Next
-open WebSharper.UI.Next.Html
-open WebSharper.UI.Next.Client
+open WebSharper.UI
+open WebSharper.UI.Html
+open WebSharper.UI.Client
 open WebSharper.Forms
 open WebSharper.Forms.Tests.Forms
+
+#nowarn "58" // indentation
 
 [<JavaScript>]
 module RenderWithTemplate =
@@ -42,8 +44,8 @@ module RenderWithTemplate =
                             .ContactType(
                                 depContact.RenderPrimary (fun rvContactType ->
                                     Doc.Concat [
-                                        label [Doc.Radio [] true rvContactType; text "Email"]
-                                        label [Doc.Radio [] false rvContactType; text "Phone number"]
+                                        label [] [Doc.Radio [] true rvContactType; text "Email"]
+                                        label [] [Doc.Radio [] false rvContactType; text "Phone number"]
                                     ]
                                 )
                             )

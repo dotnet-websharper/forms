@@ -2,6 +2,6 @@
   <info organisation="IntelliFactory" module="zafir.forms" revision="3.0" />
   <dependencies>
     <dependency name="zafir" rev="latest.integration" />
-    <dependency name="zafir.ui.next" rev="latest.integration" />
+    <dependency name="zafir.ui" rev="latest.integration" />
   </dependencies>
 </ivy-module>

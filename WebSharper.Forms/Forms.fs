@@ -3,9 +3,9 @@ namespace WebSharper.Forms
 open System.Runtime.CompilerServices
 open WebSharper
 open WebSharper.JavaScript
-open WebSharper.UI.Next
-open WebSharper.UI.Next.Client
-open WebSharper.UI.Next.Notation
+open WebSharper.UI
+open WebSharper.UI.Client
+open WebSharper.UI.Notation
 
 [<JavaScript; Sealed>]
 type ErrorMessage (id: string, message: string) =
@@ -541,8 +541,8 @@ module Pervasives =
 [<JavaScript>]
 module Attr =
 
-    open WebSharper.UI.Next.Html
-    open WebSharper.UI.Next.Client
+    open WebSharper.UI.Html
+    open WebSharper.UI.Client
 
     let SubmitterValidate (submitter: Submitter<_>) =
         Attr.Append
@@ -553,11 +553,11 @@ module Attr =
 [<JavaScript>]
 module Doc =
 
-    open WebSharper.UI.Next.Html
-    open WebSharper.UI.Next.Client
+    open WebSharper.UI.Html
+    open WebSharper.UI.Client
 
     let ButtonValidate caption attrs (submitter: Submitter<_>) =
-        buttonAttr (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
+        button (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
 
     let ShowErrors (v: View<Result<'T>>) (f: list<ErrorMessage> -> Doc) =
         v.Doc(function

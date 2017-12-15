@@ -2,8 +2,8 @@ namespace WebSharper.Forms
 
 open System.Runtime.CompilerServices
 open WebSharper
-open WebSharper.UI.Next
-open WebSharper.UI.Next.Client
+open WebSharper.UI
+open WebSharper.UI.Client
 
 [<Sealed>]
 type ErrorMessage =
