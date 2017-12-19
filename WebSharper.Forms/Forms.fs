@@ -339,7 +339,7 @@ module Form =
             render = id
         }
 
-    let YieldVar (var: IRef<_>) =
+    let YieldVar (var: Var<_>) =
         {
             id = var.Id
             view = var.View |> View.Map Success
@@ -350,7 +350,7 @@ module Form =
         YieldVar (Var.Create value)
 
     let YieldFailure () =
-        let var = Var.Create JS.Undefined<_> :> IRef<_>
+        let var = Var.Create JS.Undefined<_> :> Var<_>
         let view = var.View
         {
             id = var.Id
@@ -359,7 +359,7 @@ module Form =
         }
 
     let YieldOption init noneValue =
-        let var = Var.Create (defaultArg init noneValue) :> IRef<_>
+        let var = Var.Create (defaultArg init noneValue) :> Var<_>
         {
             id = var.Id
             view = var.View |> View.Map (fun x ->
@@ -575,7 +575,7 @@ module Doc =
 type View =
 
     [<Extension>]
-    static member Through (this: View<Result<'T>>, v: IRef<'U>) : View<Result<'T>> =
+    static member Through (this: View<Result<'T>>, v: Var<'U>) : View<Result<'T>> =
         this |> View.Map (fun x ->
             match x with
             | Success _ -> x

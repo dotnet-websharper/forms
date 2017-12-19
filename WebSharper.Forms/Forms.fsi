@@ -175,27 +175,27 @@ module Form =
     /// initialized to a successful value `init`.
     val Yield
          : init: 'T
-        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive value.
     val YieldVar
-         : IRef<'T>
-        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
+         : Var<'T>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive value, initialized to failure.
     val YieldFailure
          : unit
-        -> Form<'T, (IRef<'T> -> 'D) -> 'D>
+        -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
     /// Create a Form that returns a reactive optional value,
     /// initialized to a successful value `init`.
     ///
-    /// When the associated IRef is `noneValue`, the result value is `None`;
+    /// When the associated Var is `noneValue`, the result value is `None`;
     /// when it is any other value `x`, the result value is `Some x`.
     val YieldOption
          : init: option<'T>
         -> noneValue: 'T
-        -> Form<option<'T>, (IRef<'T> -> 'D) -> 'D>
+        -> Form<option<'T>, (Var<'T> -> 'D) -> 'D>
         when 'T : equality
 
     /// Apply a Form that returns a function to a Form that returns a value.
@@ -328,7 +328,7 @@ module Form =
 
         /// Create a Form that returns a reactive value,
         /// initialized to a successful value `init`.
-        member Yield : init: 'T -> Form<'T, (IRef<'T> -> 'D) -> 'D>
+        member Yield : init: 'T -> Form<'T, (Var<'T> -> 'D) -> 'D>
 
         /// Return the given Form.
         member YieldFrom : Form<'T, 'R -> 'D> -> Form<'T, 'R -> 'D>
@@ -407,11 +407,11 @@ module private Fresh =
 type View =
 
     /// When the input View is a failure, restrict its error messages
-    /// to those that come directly from the given IRef.
+    /// to those that come directly from the given Var.
     [<Extension>]
     static member Through
          : input: View<Result<'T>>
-         * IRef<'U>
+         * Var<'U>
         -> View<Result<'T>>
 
     /// When the input View is a failure, restrict its error messages
