@@ -71,8 +71,8 @@ type Result =
             | Success (Failure mx) -> Failure mx
             | Success (Success x) -> Success (f x)
 
-    static member Bind (f: 'T -> Result<'U>) (rx: Result<'T>) : Result<'U> =
-        match rx with
+    static member Bind (f: 'T -> Result<'U>) (r: Result<'T>) : Result<'U> =
+        match r with
         | Failure m -> Failure m
         | Success x -> f x
 
@@ -346,8 +346,8 @@ module Form =
             render = fun r -> r var
         }
 
-    let Yield value =
-        YieldVar (Var.Create value)
+    let Yield init =
+        YieldVar (Var.Create init)
 
     let YieldFailure () =
         let var = Var.Create JS.Undefined<_> :> Var<_>
@@ -457,8 +457,8 @@ module Form =
         MapResult (fun x -> f x; x) p
 
     [<JavaScript>]
-    let ManyForm inits create p =
-        let m = Many.Collection(p, inits, create)
+    let ManyForm init addForm itemForm =
+        let m = Many.Collection(itemForm, init, addForm)
         {
             id = Fresh.Id()
             view = m.View
@@ -466,17 +466,17 @@ module Form =
         }
 
     [<JavaScript>]
-    let Many inits init p =
-        let pInit = p init
-        let m = Many.CollectionWithDefault(p, inits, pInit, init)
+    let Many init addValue itemForm =
+        let pInit = itemForm addValue
+        let m = Many.CollectionWithDefault(itemForm, init, pInit, addValue)
         {
             id = Fresh.Id()
             view = m.View
             render = fun f -> f m
         }
 
-    let Dependent input output =
-        let d = Dependent.Make input output
+    let Dependent primary dependent =
+        let d = Dependent.Make primary dependent
         {
             id = Fresh.Id()
             view = d.View
@@ -487,7 +487,7 @@ module Form =
         | Do
 
         [<Inline>]
-        member this.Bind(p, f) = Dependent p f
+        member this.Bind(input, output) = Dependent input output
 
         [<Inline>]
         member this.Return x = Return x
@@ -496,7 +496,7 @@ module Form =
         member this.ReturnFrom (p: Form<_, _ -> _>) = p
 
         [<Inline>]
-        member this.Yield x = Yield x
+        member this.Yield init = Yield init
 
         [<Inline>]
         member this.YieldFrom (p: Form<_, _ -> _>) = p
@@ -517,8 +517,8 @@ module Validation =
     let IsNotEmpty msg p =
         Is (fun x -> x <> "") msg p
 
-    let IsMatch (re: string) msg p =
-        Is (RegExp(re).Test) msg p
+    let IsMatch (regexp: string) msg p =
+        Is (RegExp(regexp).Test) msg p
 
     let MapValidCheckedInput msg p =
         p |> Form.MapResult (fun res ->
@@ -575,16 +575,16 @@ module Doc =
 type View =
 
     [<Extension>]
-    static member Through (this: View<Result<'T>>, v: Var<'U>) : View<Result<'T>> =
-        this |> View.Map (fun x ->
+    static member Through (input: View<Result<'T>>, v: Var<'U>) : View<Result<'T>> =
+        input |> View.Map (fun x ->
             match x with
             | Success _ -> x
             | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = v.Id))
         )
 
     [<Extension>]
-    static member Through (this: View<Result<'T>>, p: Form<'U, 'R>) : View<Result<'T>> =
-        this |> View.Map (fun x ->
+    static member Through (input: View<Result<'T>>, p: Form<'U, 'R>) : View<Result<'T>> =
+        input |> View.Map (fun x ->
             match x with
             | Success _ -> x
             | Failure msgs -> Failure (msgs |> List.filter (fun m -> m.Id = p.id))
