@@ -15,7 +15,7 @@ module RenderWithoutTemplate =
         Forms.FullForm()
         |> Form.Render (fun items submit ->
             div [] [
-                h1 [] [text "Contacts:"]
+                h2 [] [text "Contacts:"]
                 table [] [
                     thead [] [
                         tr [] [

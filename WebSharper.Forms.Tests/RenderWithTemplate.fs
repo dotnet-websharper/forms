@@ -15,9 +15,6 @@ module RenderWithTemplate =
 
     type Template = Templating.Template<"index.html">
 
-#if ZAFIR
-    [<ReflectedDefinition>]
-#endif
     let Render() =
         Forms.FullForm()
         |> Form.Render (fun items submit ->

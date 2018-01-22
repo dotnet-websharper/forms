@@ -8,3 +8,9 @@ build/
 *.Tests/Content/
 **/bin/
 **/obj/
+
+bin/
+obj/
+/.fake/
+/paket-files/
+/.vscode/

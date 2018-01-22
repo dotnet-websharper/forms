@@ -10,11 +10,13 @@ open WebSharper.Forms
 [<JavaScript>]
 module Main =
 
-#if ZAFIR
     [<SPAEntryPoint>]
     let Main() =
-#else
-    let Main =
-#endif
-        Console.Log("Running JavaScript Entry Point..")
-        RenderWithTemplate.Render() |> Doc.RunById "main"
+        Doc.Concat [
+            h1 [] [text "Rendered with a template:"]
+            RenderWithTemplate.Render()
+            hr [] []
+            h1 [] [text "Rendered with HTML combinators:"]
+            RenderWithoutTemplate.Render()
+        ]
+        |> Doc.RunAppend JS.Document.Body

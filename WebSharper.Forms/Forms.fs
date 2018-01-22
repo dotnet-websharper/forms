@@ -234,12 +234,14 @@ module Form =
                 p, ItemOperations(delete, sMoveUp, sMoveDown), ident
             do Seq.iter (mk >> arr.Add) inits
 
+            let fst3 (x, _, _) = x
             let changesView =
                 var.View
                 |> View.Bind (fun arr ->
                     arr.ToArray()
                     |> Array.MapTreeReduce
-                        (fun (p, _, _ as x) -> p.view |> View.Map (fun _ -> Seq.singleton x))
+                        (fun x ->
+                            (fst3 x).view |> View.Map (fun _ -> Seq.singleton x))
                         (View.Const Seq.empty)
                         (View.Map2 Seq.append)
                 )

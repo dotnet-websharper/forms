@@ -1,0 +1,17 @@
+version 5.108.0
+source https://api.nuget.org/v3/index.json
+source https://nuget.intellifactory.com/nuget username: "%IF_USER%" password: "%IF_PASS%"
+
+storage: none
+
+nuget WebSharper alpha
+nuget WebSharper.FSharp alpha
+nuget WebSharper.UI alpha
+
+group build
+    framework: net45
+    source https://api.nuget.org/v3/index.json
+
+    nuget FAKE
+    nuget Paket.Core 5.108.0
+    github intellifactory/websharper tools/WebSharper.Fake.fsx
