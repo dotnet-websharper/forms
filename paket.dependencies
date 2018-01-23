@@ -1,4 +1,4 @@
-version 5.108.0
+version 5.122.3
 source https://api.nuget.org/v3/index.json
 source https://nuget.intellifactory.com/nuget username: "%IF_USER%" password: "%IF_PASS%"
 
@@ -13,5 +13,7 @@ group build
     source https://api.nuget.org/v3/index.json
 
     nuget FAKE
-    nuget Paket.Core 5.108.0
+    nuget Paket.Core 5.122.3
     github intellifactory/websharper tools/WebSharper.Fake.fsx
+    github intellifactory/websharper tools/WebSharper.Fake.cmd
+    github intellifactory/websharper tools/WebSharper.Fake.sh
