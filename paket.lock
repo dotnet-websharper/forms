@@ -582,12 +582,12 @@ NUGET
   remote: https://api.nuget.org/v3/index.json
     Chessie (0.6)
       FSharp.Core
-    FAKE (4.64.4)
-    FSharp.Compiler.Tools (4.1.34)
+    FAKE (4.64.6)
+    FSharp.Compiler.Tools (10.0.1)
     FSharp.Core (4.3.4)
     Mono.Cecil (0.10.0-beta7)
-    Newtonsoft.Json (10.0.3)
-    Paket.Core (5.122.3)
+    Newtonsoft.Json (11.0.1)
+    Paket.Core (5.141)
       Chessie (>= 0.6)
       FSharp.Compiler.Tools
       FSharp.Core
@@ -598,4 +598,4 @@ GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (3620ef58aabd2af5b1e7234cdb982d5381f10c57)
+     (7daa4afa9ec361e6dd20bd2ac05b76def2e58f87)
