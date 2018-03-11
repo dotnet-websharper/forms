@@ -1,7 +1,7 @@
 STORAGE: NONE
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    HtmlAgilityPack (1.6.17)
+    HtmlAgilityPack (1.7.1)
       Microsoft.NETCore.UniversalWindowsPlatform (>= 5.2.3) - restriction: >= uap10.0
       NETStandard.Library (>= 1.6.1) - restriction: && (< net40) (>= netstandard1.6) (< netstandard2.0)
       System.Net.Http (>= 4.3.1) - restriction: || (&& (< net40) (>= netstandard1.3) (< netstandard1.6) (< win8)) (&& (< net40) (>= netstandard1.6) (< netstandard2.0))
@@ -23,7 +23,7 @@ NUGET
       runtime.win10-x86.Microsoft.Net.UWPCoreRuntimeSdk (>= 2.1.2) - restriction: >= uap10.1
     Microsoft.NETCore.Platforms (2.0.1) - restriction: >= uap10.1
     Microsoft.NETCore.Targets (2.0) - restriction: || (>= dnxcore50) (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.3) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos))
-    Microsoft.NETCore.UniversalWindowsPlatform (6.0.7) - restriction: >= uap10.0
+    Microsoft.NETCore.UniversalWindowsPlatform (6.0.8) - restriction: >= uap10.0
       Microsoft.Net.Native.Compiler (>= 2.0.3) - restriction: >= uap10.1
       Microsoft.Net.UWPCoreRuntimeSdk (>= 2.1.2) - restriction: >= uap10.1
       Microsoft.NETCore.Platforms (>= 2.0) - restriction: >= uap10.1
@@ -567,13 +567,13 @@ NUGET
       System.Xml.XmlDocument (>= 4.3) - restriction: || (&& (< monoandroid) (< monotouch) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (>= net46)
       System.Xml.XPath (>= 4.3) - restriction: || (&& (< monoandroid) (< monotouch) (>= netstandard1.3) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (>= net46)
   remote: https://nuget.intellifactory.com/nuget
-    WebSharper (4.2.3.236)
-    WebSharper.FSharp (4.2.3.236)
-      WebSharper (4.2.3.236)
-    WebSharper.UI (4.2.1.86)
-      HtmlAgilityPack (>= 1.6.15 < 1.7)
-      System.Xml.XDocument (>= 4.3 < 5.0)
-      WebSharper (>= 4.2.3 < 4.3)
+    WebSharper (4.2.4.247)
+    WebSharper.FSharp (4.2.4.247)
+      WebSharper (4.2.4.247)
+    WebSharper.UI (4.2.2.109)
+      HtmlAgilityPack (>= 1.7.1)
+      System.Xml.XDocument (>= 4.3)
+      WebSharper (>= 4.2.4 < 4.3)
 
 GROUP build
 RESTRICTION: == net45
@@ -597,4 +597,4 @@ GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (7daa4afa9ec361e6dd20bd2ac05b76def2e58f87)
+     (1fde3d5c3233c63777f1ec9154ddd2e03b8a5530)
