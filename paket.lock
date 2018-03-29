@@ -1,7 +1,7 @@
 STORAGE: NONE
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    HtmlAgilityPack (1.7.1)
+    HtmlAgilityPack (1.7.2)
       Microsoft.NETCore.UniversalWindowsPlatform (>= 5.2.3) - restriction: >= uap10.0
       NETStandard.Library (>= 1.6.1) - restriction: && (< net40) (>= netstandard1.6) (< netstandard2.0)
       System.Net.Http (>= 4.3.1) - restriction: || (&& (< net40) (>= netstandard1.3) (< netstandard1.6) (< win8)) (&& (< net40) (>= netstandard1.6) (< netstandard2.0))
@@ -570,7 +570,7 @@ NUGET
     WebSharper (4.2.8.255)
     WebSharper.FSharp (4.2.8.255)
       WebSharper (4.2.8.255)
-    WebSharper.UI (4.2.3.111)
+    WebSharper.UI (4.2.4.114)
       HtmlAgilityPack (>= 1.7.1)
       System.Xml.XDocument (>= 4.3)
       WebSharper (>= 4.2.8 < 4.3)
