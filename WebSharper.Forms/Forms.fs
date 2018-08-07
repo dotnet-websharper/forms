@@ -559,7 +559,7 @@ module Doc =
     open WebSharper.UI.Client
 
     let ButtonValidate caption attrs (submitter: Submitter<_>) =
-        button (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
+        Elt.button (Seq.append [|Attr.SubmitterValidate submitter|] attrs) [text caption]
 
     let ShowErrors (v: View<Result<'T>>) (f: list<ErrorMessage> -> Doc) =
         v.Doc(function
