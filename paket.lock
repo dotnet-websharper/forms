@@ -474,14 +474,14 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://daily.websharper.com/nuget
-    WebSharper (4.5.15.342)
+    WebSharper (4.5.16.344)
       FSharp.Core (>= 4.2.3)
-    WebSharper.FSharp (4.5.15.342)
-      WebSharper (4.5.15.342)
-    WebSharper.UI (4.5.12.177)
+    WebSharper.FSharp (4.5.16.344)
+      WebSharper (4.5.16.344)
+    WebSharper.UI (4.5.12.178)
       HtmlAgilityPack (>= 1.7.1)
       System.Xml.XDocument (>= 4.3)
-      WebSharper (>= 4.5.15 < 4.6)
+      WebSharper (>= 4.5.16 < 4.6)
 
 GROUP build
 RESTRICTION: == net45
