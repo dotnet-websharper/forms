@@ -3,6 +3,34 @@
 Forms are a functional, composable, and type-safe form abstraction for building reactive user interfaces in WebSharper,
 similar to Formlets but with fine control over the structure of the output.
 
+A sample Form:
+
+```fsharp
+let LoginForm () =
+    Form.Return (fun user pass -> user, pass)
+    <*> (Form.Yield ""
+        |> Validation.IsNotEmpty "Must enter a username")
+    <*> (Form.Yield ""
+        |> Validation.IsNotEmpty "Must enter a password")
+    |> Form.WithSubmit
+    |> Form.Run (fun (u, p) ->
+        JS.Alert("Welcome, " + u + "!")
+    )
+    |> Form.Render (fun user pass submit ->
+        div [] [
+            div [] [label [] [text "Username: "]; Doc.Input [] user]
+            div [] [label [] [text "Password: "]; Doc.PasswordBox [] pass]
+            Doc.Button "Log in" [] submit.Trigger
+            div [] [
+                Doc.ShowErrors submit.View (fun errors ->
+                    errors
+                    |> Seq.map (fun m -> p [] [text m.Text])
+                    |> Doc.Concat)
+            ]
+        ]
+    )
+```
+
 * [Tutorial][intro] - check here first to learn about Forms
 * Demos
   * The [Pets example](http://try.websharper.com/snippet/Dark_Clark/0000Cy) from the tutorial on [Try WebSharper](https://try.websharper.com)
