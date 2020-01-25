@@ -1,9 +1,12 @@
 # WebSharper.Forms
 
-Forms are a functional form abstraction to build reactive user interfaces in WebSharper,
+Forms are a functional, composable, and type-safe form abstraction for building reactive user interfaces in WebSharper,
 similar to Formlets but with fine control over the structure of the output.
 
 * [Tutorial][intro] - check here first to learn about Forms
+* Demos
+  * The [Pets example](http://try.websharper.com/snippet/Dark_Clark/0000Cy) from the tutorial on [Try WebSharper](https://try.websharper.com)
+  * The main [test project](https://github.com/dotnet-websharper/forms/tree/master/WebSharper.Forms.Tests) in this repository - check here for inline HTML and *templated* forms
 * [License][license] (Apache v2)
 * GitHub - [sources][gh], [tracker][issues]
 * Community
