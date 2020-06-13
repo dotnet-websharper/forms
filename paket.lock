@@ -399,13 +399,13 @@ NUGET
       Microsoft.NETCore.Targets (>= 1.1) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net451)) (== netstandard2.0)
       System.Runtime (>= 4.3) - restriction: || (&& (== net461) (>= dnxcore50)) (&& (== net461) (< net451)) (== netstandard2.0)
   remote: https://daily.websharper.com/nuget
-    WebSharper (4.6.4.404)
+    WebSharper (4.6.5.406)
       FSharp.Core (>= 4.2.3)
-    WebSharper.FSharp (4.6.4.404)
-      WebSharper (4.6.4.404)
-    WebSharper.UI (4.6.3.217)
+    WebSharper.FSharp (4.6.5.406)
+      WebSharper (4.6.5.406)
+    WebSharper.UI (4.6.3.219)
       HtmlAgilityPack (>= 1.7.1)
-      WebSharper (>= 4.6.4 < 4.7)
+      WebSharper (>= 4.6.5 < 4.7)
 
 GROUP build
 RESTRICTION: == net45
