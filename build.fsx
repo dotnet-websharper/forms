@@ -1,4 +1,4 @@
-﻿#if INTERACTIVE
+#if INTERACTIVE
 #r "nuget: FAKE.Core"
 #r "nuget: Fake.Core.Target"
 #r "nuget: Fake.IO.FileSystem"
@@ -30,7 +30,5 @@ open WebSharper.Fake
 let targets =
     WSTargets.Default (fun () -> GetSemVerOf "WebSharper" |> ComputeVersion)
     |> MakeTargets
-
-targets.Publish ==> "CI-Release"
 
 Target.runOrDefault "Build"
