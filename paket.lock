@@ -387,13 +387,13 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (5.0.0.64-preview1)
+    WebSharper (5.0.0.69-preview1)
       FSharp.Core (>= 5.0)
       System.Configuration.ConfigurationManager (>= 5.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.FSharp (5.0.0.64-preview1)
-      WebSharper (5.0.0.64-preview1)
-    WebSharper.UI (5.0.0.64-preview1)
+    WebSharper.FSharp (5.0.0.69-preview1)
+      WebSharper (5.0.0.69-preview1)
+    WebSharper.UI (5.0.0.69-preview1)
       HtmlAgilityPack (>= 1.11)
       WebSharper (>= 5.0 < 5.1)
 
@@ -838,4 +838,4 @@ GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (7155f2cb840374092cbe8eb2c8f1399c5c97f4af)
+     (2f60eef2ce4b2ed9efdedf1727f1ca56df4ec76c)
