@@ -1,20 +1,21 @@
 type file
 id WebSharper.Forms
-authors
-    IntelliFactory
-owners
-    IntelliFactory
+authors IntelliFactory
+owners IntelliFactory
+projectUrl https://websharper.com/
+repositoryType git
+repositoryUrl https://github.com/dotnet-websharper/forms
 licenseUrl http://github.com/intellifactory/websharper.forms/blob/master/LICENSE.md
-projectUrl http://github.com/intellifactory/websharper.forms
+licenseExpression Apache-2.0
+iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
 description
     Provides a framework to build reactive interfaces in WebSharper,similar to Formlets but with more control over the structure of the output.
 tags
-    Web JavaScript F# C#
+    WebSharper Web JavaScript F# C# FSharp CSharp
 files
-    ../WebSharper.Forms/bin/Release/net461/WebSharper.Forms.dll ==> lib/net461
-    ../WebSharper.Forms/bin/Release/net461/WebSharper.Forms.xml ==> lib/net461
     ../WebSharper.Forms/bin/Release/netstandard2.0/WebSharper.Forms.dll ==> lib/netstandard2.0
     ../WebSharper.Forms/bin/Release/netstandard2.0/WebSharper.Forms.xml ==> lib/netstandard2.0
 dependencies
-        WebSharper ~> LOCKEDVERSION:[3]
-        WebSharper.UI ~> LOCKEDVERSION:[3]
+    framework: netstandard2.0
+            WebSharper ~> LOCKEDVERSION:[3]
+            WebSharper.UI ~> LOCKEDVERSION:[3]
