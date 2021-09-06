@@ -6,7 +6,6 @@ projectUrl https://websharper.com/
 repositoryType git
 repositoryUrl https://github.com/dotnet-websharper/forms
 licenseUrl http://github.com/intellifactory/websharper.forms/blob/master/LICENSE.md
-licenseExpression Apache-2.0
 iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
 description
     Provides a framework to build reactive interfaces in WebSharper,similar to Formlets but with more control over the structure of the output.
