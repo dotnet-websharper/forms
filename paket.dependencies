@@ -7,7 +7,7 @@ framework: netstandard2.0, netcoreapp2.1, netcoreapp3.1, net5.0
 storage: none
 strategy: min
 
-nuget FSharp.Core 5.0.0
+nuget FSharp.Core
 nuget WebSharper prerelease
 nuget WebSharper.FSharp prerelease
 nuget WebSharper.UI prerelease
@@ -26,7 +26,7 @@ group testing
     storage: none
     strategy: min
 
-    nuget FSharp.Core 5.0.0
+    nuget FSharp.Core
     nuget WebSharper prerelease
     nuget WebSharper.FSharp prerelease
     nuget WebSharper.UI prerelease
