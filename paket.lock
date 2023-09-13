@@ -361,17 +361,17 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (7.0.0.321-beta2)
+    WebSharper (7.0.1.330-beta2)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.FSharp (7.0.0.321-beta2)
-      WebSharper (7.0.0.321-beta2)
-    WebSharper.MathJS (7.0.0.321-beta2)
-      WebSharper (7.0.0.321-beta2)
-    WebSharper.UI (7.0.0.321-beta2)
+    WebSharper.FSharp (7.0.1.330-beta2)
+      WebSharper (7.0.1.330-beta2)
+    WebSharper.MathJS (7.0.1.330-beta2)
+      WebSharper (7.0.1.330-beta2)
+    WebSharper.UI (7.0.0.330-beta2)
       HtmlAgilityPack (>= 1.11)
-      WebSharper (>= 7.0 < 7.1)
-      WebSharper.MathJS (>= 7.0 < 7.1)
+      WebSharper (>= 7.0.1 < 7.1)
+      WebSharper.MathJS (>= 7.0.1 < 7.1)
 
 GROUP testing
 STORAGE: NONE
@@ -805,26 +805,26 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (7.0.0.321-beta2)
+    WebSharper (7.0.1.330-beta2)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.AspNetCore (7.0.0.321-beta2)
+    WebSharper.AspNetCore (7.0.1.330-beta2)
       Microsoft.AspNetCore.Authentication.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Hosting.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Mvc.Abstractions (>= 2.0)
       System.Configuration.ConfigurationManager (>= 4.7)
-      WebSharper (7.0.0.321-beta2)
-    WebSharper.FSharp (7.0.0.321-beta2)
-      WebSharper (7.0.0.321-beta2)
-    WebSharper.MathJS (7.0.0.321-beta2)
-      WebSharper (7.0.0.321-beta2)
-    WebSharper.UI (7.0.0.321-beta2)
+      WebSharper (7.0.1.330-beta2)
+    WebSharper.FSharp (7.0.1.330-beta2)
+      WebSharper (7.0.1.330-beta2)
+    WebSharper.MathJS (7.0.1.330-beta2)
+      WebSharper (7.0.1.330-beta2)
+    WebSharper.UI (7.0.0.330-beta2)
       HtmlAgilityPack (>= 1.11)
-      WebSharper (>= 7.0 < 7.1)
-      WebSharper.MathJS (>= 7.0 < 7.1)
+      WebSharper (>= 7.0.1 < 7.1)
+      WebSharper.MathJS (>= 7.0.1 < 7.1)
 
 GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (bb903f6b407852f37b7c8c8e466b219b70ca988d)
+     (1d2e8ce1ca419e3c90a439f0dcf508e650734ba8)
