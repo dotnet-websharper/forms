@@ -361,14 +361,17 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (6.1.3.269)
+    WebSharper (7.0.4.376-beta3)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.FSharp (6.1.3.269)
-      WebSharper (6.1.3.269)
-    WebSharper.UI (6.1.2.269)
+    WebSharper.FSharp (7.0.4.376-beta3)
+      WebSharper (7.0.4.376-beta3)
+    WebSharper.MathJS (7.0.4.376-beta3)
+      WebSharper (>= 7.0.4 < 7.1)
+    WebSharper.UI (7.0.2.376-beta3)
       HtmlAgilityPack (>= 1.11)
-      WebSharper (>= 6.1.3 < 6.2)
+      WebSharper (>= 7.0.4 < 7.1)
+      WebSharper.MathJS (>= 7.0.4 < 7.1)
 
 GROUP testing
 STORAGE: NONE
@@ -376,7 +379,7 @@ STRATEGY: MIN
 RESTRICTION: || (== net5.0) (== netcoreapp2.1) (== netcoreapp3.1) (== netstandard2.0)
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Core (7.0)
+    FSharp.Core (8.0.100)
     HtmlAgilityPack (1.11)
       System.Net.Http (>= 4.3.2)
       System.Xml.XmlDocument (>= 4.3)
@@ -802,23 +805,26 @@ NUGET
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (6.1.3.269)
+    WebSharper (7.0.4.376-beta3)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.AspNetCore (6.1.3.269)
+    WebSharper.AspNetCore (7.0.4.376-beta3)
       Microsoft.AspNetCore.Authentication.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Hosting.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Mvc.Abstractions (>= 2.0)
       System.Configuration.ConfigurationManager (>= 4.7)
-      WebSharper (6.1.3.269)
-    WebSharper.FSharp (6.1.3.269)
-      WebSharper (6.1.3.269)
-    WebSharper.UI (6.1.2.269)
+      WebSharper (7.0.4.376-beta3)
+    WebSharper.FSharp (7.0.4.376-beta3)
+      WebSharper (7.0.4.376-beta3)
+    WebSharper.MathJS (7.0.4.376-beta3)
+      WebSharper (>= 7.0.4 < 7.1)
+    WebSharper.UI (7.0.2.376-beta3)
       HtmlAgilityPack (>= 1.11)
-      WebSharper (>= 6.1.3 < 6.2)
+      WebSharper (>= 7.0.4 < 7.1)
+      WebSharper.MathJS (>= 7.0.4 < 7.1)
 
 GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (73d6303ae00aae83c1c075b5edc47ceb0068936e)
+     (0153b1033e752df2da5672528e9e04bedafefbea)
