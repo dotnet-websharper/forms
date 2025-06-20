@@ -7,9 +7,9 @@ framework: netstandard2.0, netcoreapp2.1, netcoreapp3.1, net8.0
 storage: none
 strategy: min
 
-nuget WebSharper prerelease
-nuget WebSharper.FSharp prerelease
-nuget WebSharper.UI prerelease
+nuget WebSharper ~> 9.0
+nuget WebSharper.FSharp ~> 9.0
+nuget WebSharper.UI ~> 9.0
 
 
 group wsbuild
@@ -26,7 +26,7 @@ group testing
     strategy: min
 
     nuget FSharp.Core
-    nuget WebSharper prerelease
-    nuget WebSharper.FSharp prerelease
-    nuget WebSharper.UI prerelease
-    nuget WebSharper.AspNetCore prerelease
+    nuget WebSharper ~> 9.0
+    nuget WebSharper.FSharp ~> 9.0
+    nuget WebSharper.UI ~> 9.0
+    nuget WebSharper.AspNetCore ~> 9.0
